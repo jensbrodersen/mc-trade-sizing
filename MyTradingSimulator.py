@@ -1,3 +1,49 @@
+# ------------------------------------------------------------------------------------------
+# Trading-Strategie-Simulator mit Monte-Carlo-Analyse und adaptiver Positionsgrößensteuerung
+#
+# Übersicht:
+# Dieses Skript simuliert verschiedene Trading-Strategien, bei denen die Positionsgröße
+# dynamisch an Gewinn- oder Verlustserien angepasst wird. Es werden 12 Strategien getestet,
+# darunter klassische Martingale- und Anti-Martingale-Ansätze sowie Strategien mit
+# Pausenphasen nach Gewinnserien.
+#
+# Funktionsweise:
+# - Für gegebene Trefferquote, durchschnittlichen Gewinn und Verlust sowie Trade-Anzahl
+#   werden zufällige Trade-Serien erzeugt (Monte-Carlo-Prinzip).
+# - Für jede Strategie wird die Entwicklung des Kapitals und der maximale Drawdown
+#   simuliert und ausgewertet.
+# - Die Positionsgröße wird je nach Strategie nach bestimmten Regeln erhöht, reduziert
+#   oder pausiert (z.B. nach x Gewinnen/Verlusten).
+#
+# Output und Bewertung:
+# - Für jede Strategie werden folgende Kennzahlen berechnet:
+#   * Ø Gewinn (€): Durchschnittlicher Gesamtgewinn über alle Simulationen.
+#   * Ø Drawdown (€): Durchschnittlicher maximaler Kapitalrückgang.
+#   * Verhältnis: Verhältnis von Ø Gewinn zu Ø Drawdown (Chance-Risiko).
+#   * Min/Max (€): Minimaler und maximaler Gesamtgewinn.
+#   * Min DD/Max DD (€): Minimaler und maximaler Drawdown.
+#   * Ø/Trade: Durchschnittlicher Gewinn pro Trade.
+#   * Gewinn/MaxDD: Verhältnis von Ø Gewinn zu maximalem Drawdown.
+# - Die Strategien werden nach Ø/Trade absteigend sortiert, um die profitabelsten
+#   Varianten hervorzuheben.
+#
+# Bewertung:
+# Die Auswertung zeigt, wie sich verschiedene Anpassungen der Positionsgröße auf
+# Gewinn, Risiko und Robustheit auswirken. Besonders Strategien mit Pausen oder
+# gezielter Erhöhung nach Verlusten können das Chance-Risiko-Profil verbessern,
+# bergen aber auch Risiken bei langen Verlustserien.
+#
+# Nutzung:
+# Das Skript wird über die Kommandozeile mit Parametern für Trefferquote, Gewinn,
+# Verlust, Anzahl der Trades und Simulationen gestartet. Die Ergebnisse werden
+# direkt in der Konsole ausgegeben.
+#
+# Beispielaufruf:
+#   python mc_tradingsimulation.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+# ------------------------------------------------------------------------------------------
+# ...existing code...
+
+
 import subprocess
 import json
 import os
