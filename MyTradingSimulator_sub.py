@@ -295,12 +295,22 @@ def main():
     summary = run_all_strategies(args.hit_rate, args.avg_win, args.avg_loss, args.num_trades, args.num_simulations, args.num_mc_shuffles)
 
     print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
-    print(f"{'Strategie':<70} {'Ø Gewinn (€)':>12} {'Ø Drawdown (€)':>15} {'Verhältnis':>12} {'Min (€)':>10} {'Max (€)':>10} {'Min DD (€)':>12} {'Max DD (€)':>12} {'Ø/Trade':>10} {'Gewinn/MaxDD':>16}")
-    print("=" * 180)
+    # Neue, breitere Formatierung für lange Strategienamen
+    header = (
+        f"{'Strategie':<90} {'Ø Gewinn (€)':>14} {'Ø Drawdown (€)':>16} {'Verhältnis':>12} "
+        f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
+        f"{'Ø/Trade':>12} {'Gewinn/MaxDD':>18}"
+    )
+    print(header)
+    print("=" * len(header))
     for idx, (description, profit, dd, ratio, min_p, max_p, min_d, max_d, avg_per_trade, ratio_max_dd) in enumerate(summary):
-        print(f"{description:<70} {profit:12.2f} {dd:15.2f} {ratio:12.2f} {min_p:10.2f} {max_p:10.2f} {min_d:12.2f} {max_d:12.2f} {avg_per_trade:10.2f} {ratio_max_dd:16.2f}")
+        print(
+            f"{description:<90} {profit:14.2f} {dd:16.2f} {ratio:12.2f} "
+            f"{min_p:12.2f} {max_p:12.2f} {min_d:14.2f} {max_d:14.2f} "
+            f"{avg_per_trade:12.2f} {ratio_max_dd:18.2f}"
+        )
         if idx == 2:
-            print("-" * 180)
+            print("-" * len(header))
 
 if __name__ == "__main__":
     main()
