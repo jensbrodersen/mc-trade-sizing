@@ -263,11 +263,11 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
         ratio_max_dd = avg_profit / abs(max_dd) if max_dd != 0 else float('inf')
         summary_final.append((descriptions[i], avg_profit, avg_drawdown, ratio, min_profit, max_profit, min_dd, max_dd, avg_per_trade, ratio_max_dd))
 
-    # Sortierung: erst alle mit avg_per_trade >= 0 (absteigend), dann alle mit avg_per_trade < 0 (aufsteigend)
-    positive = [row for row in summary_final if row[8] >= 0]
-    negative = [row for row in summary_final if row[8] < 0]
-    positive.sort(key=lambda x: x[8], reverse=True)
-    negative.sort(key=lambda x: x[8])
+    # Sortierung: erst alle mit Gewinn/MaxDD >= 0 (absteigend), dann alle mit Gewinn/MaxDD < 0 (aufsteigend)
+    positive = [row for row in summary_final if row[9] >= 0]
+    negative = [row for row in summary_final if row[9] < 0]
+    positive.sort(key=lambda x: x[9], reverse=True)
+    negative.sort(key=lambda x: x[9])
     summary_final = positive + negative
 
     return summary_final
@@ -327,7 +327,8 @@ def main():
     # Finde Index der Konstanten Positionsgröße 1
     konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
 
-    print("\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
+    print("\n\n\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
+    print("--------------------------------------------------------------")
     for idx in range(4):
         if idx >= len(summary):
             break

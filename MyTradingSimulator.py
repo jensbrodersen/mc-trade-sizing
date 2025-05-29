@@ -3,7 +3,7 @@
 #
 # Übersicht:
 # Dieses Skript simuliert verschiedene Trading-Strategien, bei denen die Positionsgröße
-# dynamisch an Gewinn- oder Verlustserien angepasst wird. Es werden 12 Strategien getestet,
+# dynamisch an Gewinn- oder Verlustserien angepasst wird. Es werden 20 Strategien getestet,
 # darunter klassische Martingale- und Anti-Martingale-Ansätze sowie Strategien mit
 # Pausenphasen nach Gewinnserien.
 #
@@ -24,7 +24,7 @@
 #   * Min DD/Max DD (€): Minimaler und maximaler Drawdown.
 #   * Ø/Trade: Durchschnittlicher Gewinn pro Trade.
 #   * Gewinn/MaxDD: Verhältnis von Ø Gewinn zu maximalem Drawdown.
-# - Die Strategien werden nach Ø/Trade absteigend sortiert, um die profitabelsten
+# - Die Strategien werden nach Gewinn/MaxDD absteigend sortiert, um die profitabelsten
 #   Varianten hervorzuheben.
 #
 # Bewertung:
@@ -34,12 +34,20 @@
 # bergen aber auch Risiken bei langen Verlustserien.
 #
 # Nutzung:
-# Das Skript wird über die Kommandozeile mit Parametern für Trefferquote, Gewinn,
-# Verlust, Anzahl der Trades und Simulationen gestartet. Die Ergebnisse werden
-# direkt in der Konsole ausgegeben.
+# Das Skript wird über die Kommandozeile gestartet. Im gleichen Ordnner muss die Datei
+# "input.json" liegen, die die Parameter für die Simulation enthält. Diese Datei sollte
+# die folgenden Schlüssel enthalten:
+# - hit_rate: Trefferquote (z.B. 0.81 für 81%)
+# - avg_win: Durchschnittlicher Gewinn pro Trade (z.B. 307)
+# - avg_loss: Durchschnittlicher Verlust pro Trade (z.B. 506)
+# - num_simulations: Anzahl der Simulationen (z.B. 1000)
+# - num_trades: Anzahl der Trades pro Simulation (z.B. 100)
+# - num_mc_shuffles: Anzahl der Monte-Carlo-Shuffles (z.B. 1000)
+# ------------------------------------------------------------------------------------------
+# Die Ergebnisse werden direkt in der Konsole ausgegeben.
 #
 # Beispielaufruf:
-#   python mc_tradingsimulation.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+#   python my_trading_simulator.py
 # ------------------------------------------------------------------------------------------
 # ...existing code...
 
