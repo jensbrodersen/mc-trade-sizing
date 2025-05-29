@@ -301,6 +301,13 @@ def main():
         f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
         f"{'Ø/Trade':>12} {'Gewinn/MaxDD':>18}"
     )
+    print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
+    # Neue, breitere Formatierung für lange Strategienamen
+    header = (
+        f"{'Strategie':<90} {'Ø Gewinn (€)':>14} {'Ø Drawdown (€)':>16} {'Verhältnis':>12} "
+        f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
+        f"{'Ø/Trade':>12} {'Gewinn/MaxDD':>18}"
+    )
     print(header)
     print("=" * len(header))
     for idx, (description, profit, dd, ratio, min_p, max_p, min_d, max_d, avg_per_trade, ratio_max_dd) in enumerate(summary):
@@ -311,6 +318,36 @@ def main():
         )
         if idx == 2:
             print("-" * len(header))
+
+    # Erweiterte Ausgabe: Beste 4 Strategien im Vergleich zu "Konstante Positionsgröße 1"
+    # Farbcode: Grün für beste, Rot für konstant
+    from colorama import Fore, Style, init
+    init(autoreset=True)
+
+    # Finde Index der Konstanten Positionsgröße 1
+    konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
+
+    print("\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
+    for idx in range(4):
+        if idx >= len(summary):
+            break
+        # 1. Leerzeile
+        print()
+        # 2. Beste Strategie in grün
+        row = summary[idx]
+        print(Fore.GREEN + (
+            f"{row[0]:<90} {row[1]:14.2f} {row[2]:16.2f} {row[3]:12.2f} "
+            f"{row[4]:12.2f} {row[5]:12.2f} {row[6]:14.2f} {row[7]:14.2f} "
+            f"{row[8]:12.2f} {row[9]:18.2f}"
+        ) + Style.RESET_ALL)
+        # 3. Konstante Positionsgröße 1 in rot
+        if konst_idx is not None:
+            konst_row = summary[konst_idx]
+            print(Fore.RED + (
+                f"{konst_row[0]:<90} {konst_row[1]:14.2f} {konst_row[2]:16.2f} {konst_row[3]:12.2f} "
+                f"{konst_row[4]:12.2f} {konst_row[5]:12.2f} {konst_row[6]:14.2f} {konst_row[7]:14.2f} "
+                f"{konst_row[8]:12.2f} {konst_row[9]:18.2f}"
+            ) + Style.RESET_ALL)
 
 if __name__ == "__main__":
     main()
