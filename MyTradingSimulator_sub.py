@@ -85,6 +85,122 @@ def make_condition_func(strategy_id):
                 state['mode'] = 'trading'
                 state['win_streak'] = 0
 
+        # Erweiterung: Beispielhafte Implementierung für Strategie 13-20 (Platzhalter, bitte anpassen!)
+        elif strategy_id == 13:
+            # Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1
+            if result > 0:
+                state['win_streak'] += 1
+                if state['win_streak'] >= 2:
+                    size = 2
+            else:
+                state['loss_streak'] += 1
+                state['win_streak'] = 0
+                if state['loss_streak'] >= 2:
+                    size = 1
+                    state['loss_streak'] = 0
+
+        elif strategy_id == 14:
+            # Nach 1 Gewinn und 1 Verlust auf 2 erhöhen, sonst auf 1
+            if result > 0:
+                state['win_streak'] += 1
+            else:
+                state['loss_streak'] += 1
+            if state['win_streak'] >= 1 and state['loss_streak'] >= 1:
+                size = 2
+                state['win_streak'] = 0
+                state['loss_streak'] = 0
+            else:
+                size = 1
+
+        elif strategy_id == 15:
+            # Nach 2 Gewinnen in Folge pausieren bis 1 Verlust, dann auf 2 erhöhen
+            if state.get('paused', False):
+                if result < 0:
+                    size = 2
+                    state['paused'] = False
+                else:
+                    size = 0
+            else:
+                if result > 0:
+                    state['win_streak'] += 1
+                    if state['win_streak'] >= 2:
+                        state['paused'] = True
+                        state['win_streak'] = 0
+                        size = 0
+                else:
+                    state['win_streak'] = 0
+                    size = 1
+
+        elif strategy_id == 16:
+            # Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust
+            if state.get('paused', False):
+                if result < 0:
+                    state['paused'] = False
+                    size = 2
+                else:
+                    size = 0
+            else:
+                if result < 0:
+                    state['loss_streak'] += 1
+                    if state['loss_streak'] >= 2:
+                        size = 2
+                        state['loss_streak'] = 0
+                else:
+                    state['loss_streak'] = 0
+                    state['paused'] = True
+                    size = 0
+
+        elif strategy_id == 17:
+            # Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1
+            if result > 0 and state.get('last_result', 0) < 0:
+                size = 2
+            else:
+                size = 1
+            state['last_result'] = result
+
+        elif strategy_id == 18:
+            # Nach 3 Gewinnen auf 3 erhöhen, nach 1 Verlust zurück auf 1
+            if result > 0:
+                state['win_streak'] += 1
+                if state['win_streak'] >= 3:
+                    size = 3
+            else:
+                size = 1
+                state['win_streak'] = 0
+
+        elif strategy_id == 19:
+            # Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, sonst auf 1
+            if result > 0:
+                state['win_streak'] += 1
+                state['loss_streak'] = 0
+                if state['win_streak'] >= 2:
+                    size = 2
+                else:
+                    size = 1
+            else:
+                state['loss_streak'] += 1
+                state['win_streak'] = 0
+                if state['loss_streak'] >= 2:
+                    size = 3
+                else:
+                    size = 1
+
+        elif strategy_id == 20:
+            # Nach 1 Gewinn auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, nach Gewinn zurück auf 1
+            if result > 0:
+                if state.get('last_size', 1) == 3:
+                    size = 1
+                else:
+                    size = 2
+                state['loss_streak'] = 0
+            else:
+                state['loss_streak'] += 1
+                if state['loss_streak'] >= 2:
+                    size = 3
+                else:
+                    size = 1
+            state['last_size'] = size
+
         return size, state
 
     return func
@@ -108,9 +224,17 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
         10: "Nach 2 Gewinnen pausieren bis zum nächsten Verlust",
         11: "Nach 3 Gewinnen pausieren bis zum nächsten Verlust",
         12: "Nach 4 Gewinnen pausieren bis zum nächsten Verlust",
+        13: "Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1",
+        14: "Nach 1 Gewinn und 1 Verlust auf 2 erhöhen, sonst auf 1",
+        15: "Nach 2 Gewinnen in Folge pausieren bis 1 Verlust, dann auf 2 erhöhen",
+        16: "Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust",
+        17: "Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1",
+        18: "Nach 3 Gewinnen auf 3 erhöhen, nach 1 Verlust zurück auf 1",
+        19: "Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, sonst auf 1",
+        20: "Nach 1 Gewinn auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, nach Gewinn zurück auf 1",
     }
 
-    summary = {i: [] for i in range(1, 13)}
+    summary = {i: [] for i in range(1, 21)}
 
     for _ in range(num_simulations):
         for _ in range(num_mc_shuffles):  # Shuffle multiple times per simulation
@@ -119,13 +243,13 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
             profit, dd = strategy_static(base_results)
             summary[1].append((profit, dd))
 
-            for i in range(2, 13):
+            for i in range(2, 21):
                 cond_func = make_condition_func(i)
                 profit, dd = strategy_dynamic(base_results, cond_func)
                 summary[i].append((profit, dd))
 
     summary_final = []
-    for i in range(1, 13):
+    for i in range(1, 21):
         profits = [x[0] for x in summary[i]]
         drawdowns = [x[1] for x in summary[i]]
         avg_profit = np.mean(profits)
@@ -143,7 +267,7 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     return summary_final
 
 def main():
-    parser = argparse.ArgumentParser(description="Simuliere 12 Trading-Strategien")
+    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien")
     parser.add_argument("--hit_rate", type=float, required=True, help="Trefferquote, z.B. 0.7")
     parser.add_argument("--avg_win", type=float, required=True, help="Durchschnittlicher Gewinn pro Trade")
     parser.add_argument("--avg_loss", type=float, required=True, help="Durchschnittlicher Verlust pro Trade")
