@@ -5,8 +5,38 @@
 import numpy as np
 import argparse
 
-def simulate_trades(hit_rate, avg_win, avg_loss, num_trades):
-    return np.random.choice([avg_win, -avg_loss], size=num_trades, p=[hit_rate, 1 - hit_rate])
+def simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss):
+    """
+    Erzeugt eine Serie von Trades mit dynamischer Trefferquote und dynamischen
+    Gewinn-/Verlustwerten, um Gewinn- und Verlustserien (Streaks) zu simulieren.
+    Es werden verschiedene Marktphasen mit unterschiedlichen Wahrscheinlichkeiten
+    und Auszahlungsprofilen erzeugt.
+    """
+    # Beispielhafte Phasenaufteilung: 20% Gewinnserie, 20% Verlustserie, Rest neutral
+    phases = [
+        {'length': int(num_trades * 0.2), 'hit_rate': min(hit_rate + 0.2, 1.0), 'avg_win': avg_win * 1.1, 'avg_loss': avg_loss * 0.9},
+        {'length': int(num_trades * 0.2), 'hit_rate': max(hit_rate - 0.3, 0.05), 'avg_win': avg_win * 0.9, 'avg_loss': avg_loss * 1.1},
+        {'length': num_trades - int(num_trades * 0.4), 'hit_rate': hit_rate, 'avg_win': avg_win, 'avg_loss': avg_loss}
+    ]
+    results = []
+    trades_left = num_trades
+    for phase in phases:
+        l = min(phase['length'], trades_left)
+        if l <= 0:
+            continue
+        phase_results = np.random.choice(
+            [phase['avg_win'], -phase['avg_loss']],
+            size=l,
+            p=[phase['hit_rate'], 1 - phase['hit_rate']]
+        )
+        results.extend(phase_results)
+        trades_left -= l
+        if trades_left <= 0:
+            break
+    # Falls noch Trades fehlen, Standard auffüllen
+    if trades_left > 0:
+        results.extend(np.random.choice([avg_win, -avg_loss], size=trades_left, p=[hit_rate, 1 - hit_rate]))
+    return np.array(results)
 
 def calculate_drawdown(equity_curve):
     peak = np.maximum.accumulate(equity_curve)
@@ -209,8 +239,6 @@ def find_break_even_hit_rate(avg_win, avg_loss):
     return avg_loss / (avg_win + avg_loss)
 
 def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles):
-    base_results = simulate_trades(hit_rate, avg_win, avg_loss, num_trades)
-
     descriptions = {
         1: "Konstante Positionsgröße 1",
         2: "Nach Gewinn auf 2 erhöhen, nach Verlust zurück auf 1",
@@ -237,7 +265,9 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     summary = {i: [] for i in range(1, 21)}
 
     for _ in range(num_simulations):
-        for _ in range(num_mc_shuffles):  # Shuffle multiple times per simulation
+        # Für jede Simulation eine neue dynamische Serie erzeugen
+        base_results = simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss)
+        for _ in range(num_mc_shuffles):
             np.random.shuffle(base_results)
 
             profit, dd = strategy_static(base_results)
@@ -294,13 +324,6 @@ def main():
 
     summary = run_all_strategies(args.hit_rate, args.avg_win, args.avg_loss, args.num_trades, args.num_simulations, args.num_mc_shuffles)
 
-    print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
-    # Neue, breitere Formatierung für lange Strategienamen
-    header = (
-        f"{'Strategie':<90} {'Ø Gewinn (€)':>14} {'Ø Drawdown (€)':>16} {'Verhältnis':>12} "
-        f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
-        f"{'Ø/Trade':>12} {'Gewinn/MaxDD':>18}"
-    )
     print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
     # Neue, breitere Formatierung für lange Strategienamen
     header = (
