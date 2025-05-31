@@ -49,8 +49,6 @@
 # Beispielaufruf:
 #   python my_trading_simulator.py
 # ------------------------------------------------------------------------------------------
-# ...existing code...
-
 
 import subprocess
 import json
@@ -91,11 +89,15 @@ def main():
             print(f"Fehler: '{key}' fehlt in der JSON-Datei.")
             sys.exit(1)
 
-    # Subskript dreimal aufrufen
+    # Markov-Parameter (optional, Standardwerte wie im Subskript)
+    p_win_after_win = args.get("p_win_after_win", 0.7)
+    p_win_after_loss = args.get("p_win_after_loss", 0.5)
+
+    # Für jede Trefferquote: einmal ohne und einmal mit Markov-Korrelation aufrufen
     for i, hit_rate in enumerate(hit_rates, start=1):
-        print(f"\n--- Run {i}/3: hit_rate = {hit_rate:.2f} ---\n")
+        print(f"\n--- Run {2*i-1}/6: hit_rate = {hit_rate:.2f} (ohne Markov) ---\n")
         cmd = [
-            sys.executable,             # ruft exakt dieselbe Python-Umgebung auf
+            sys.executable,
             os.path.join(script_dir, "MyTradingSimulator_sub.py"),
             "--hit_rate", str(hit_rate),
             "--avg_win", str(args["avg_win"]),
@@ -106,7 +108,18 @@ def main():
         ]
         result = subprocess.run(cmd)
         if result.returncode != 0:
-            print(f"Run {i} ist mit Fehlercode {result.returncode} abgebrochen.")
+            print(f"Run {2*i-1} ist mit Fehlercode {result.returncode} abgebrochen.")
+            sys.exit(result.returncode)
+
+        print(f"\n--- Run {2*i}/6: hit_rate = {hit_rate:.2f} (mit Markov) ---\n")
+        cmd_markov = cmd + [
+            "--use_markov",
+            "--p_win_after_win", str(p_win_after_win),
+            "--p_win_after_loss", str(p_win_after_loss)
+        ]
+        result = subprocess.run(cmd_markov)
+        if result.returncode != 0:
+            print(f"Run {2*i} ist mit Fehlercode {result.returncode} abgebrochen.")
             sys.exit(result.returncode)
 
 if __name__ == "__main__":

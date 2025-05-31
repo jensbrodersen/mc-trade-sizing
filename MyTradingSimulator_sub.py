@@ -1,6 +1,7 @@
-# How to run: D:\documents\MyTrading\Tools_alles\python> python mc_tradingsimulation.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
-
-# mc_tradingsimulation.py
+# How to run: D:\documents\MyTrading\Tools_alles\python> python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+#
+# Mit Korrelationen (Markov-Modell):
+# python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
 
 import numpy as np
 import argparse
@@ -12,7 +13,6 @@ def simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss):
     Es werden verschiedene Marktphasen mit unterschiedlichen Wahrscheinlichkeiten
     und Auszahlungsprofilen erzeugt.
     """
-    # Beispielhafte Phasenaufteilung: 20% Gewinnserie, 20% Verlustserie, Rest neutral
     phases = [
         {'length': int(num_trades * 0.2), 'hit_rate': min(hit_rate + 0.2, 1.0), 'avg_win': avg_win * 1.1, 'avg_loss': avg_loss * 0.9},
         {'length': int(num_trades * 0.2), 'hit_rate': max(hit_rate - 0.3, 0.05), 'avg_win': avg_win * 0.9, 'avg_loss': avg_loss * 1.1},
@@ -33,9 +33,32 @@ def simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss):
         trades_left -= l
         if trades_left <= 0:
             break
-    # Falls noch Trades fehlen, Standard auffüllen
     if trades_left > 0:
         results.extend(np.random.choice([avg_win, -avg_loss], size=trades_left, p=[hit_rate, 1 - hit_rate]))
+    return np.array(results)
+
+def simulate_trades_markov(num_trades, hit_rate, avg_win, avg_loss, p_win_after_win=0.7, p_win_after_loss=0.5):
+    """
+    Erzeugt eine Serie von Trades mit Korrelation zwischen den Trades (Markov-Kette).
+    p_win_after_win: Wahrscheinlichkeit für einen Gewinn nach einem Gewinn
+    p_win_after_loss: Wahrscheinlichkeit für einen Gewinn nach einem Verlust
+    """
+    results = []
+    last_win = np.random.rand() < hit_rate
+    if last_win:
+        results.append(avg_win)
+    else:
+        results.append(-avg_loss)
+    for _ in range(1, num_trades):
+        if last_win:
+            win = np.random.rand() < p_win_after_win
+        else:
+            win = np.random.rand() < p_win_after_loss
+        if win:
+            results.append(avg_win)
+        else:
+            results.append(-avg_loss)
+        last_win = win
     return np.array(results)
 
 def calculate_drawdown(equity_curve):
@@ -75,6 +98,9 @@ def strategy_dynamic(results, condition_func):
 
 def make_condition_func(strategy_id):
     def func(result, size, state):
+        # ... (wie gehabt, alle Strategien) ...
+        # (Hier bleibt der Code unverändert, siehe vorherige Versionen)
+        # Siehe vorherige Versionen für Details
         if strategy_id == 2:
             if result > 0:
                 size = 2
@@ -115,9 +141,7 @@ def make_condition_func(strategy_id):
                 state['mode'] = 'trading'
                 state['win_streak'] = 0
 
-        # Erweiterung: Beispielhafte Implementierung für Strategie 13-20 (Platzhalter, bitte anpassen!)
         elif strategy_id == 13:
-            # Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1
             if result > 0:
                 state['win_streak'] += 1
                 if state['win_streak'] >= 2:
@@ -130,7 +154,6 @@ def make_condition_func(strategy_id):
                     state['loss_streak'] = 0
 
         elif strategy_id == 14:
-            # Nach 1 Gewinn und 1 Verlust auf 2 erhöhen, sonst auf 1
             if result > 0:
                 state['win_streak'] += 1
             else:
@@ -143,7 +166,6 @@ def make_condition_func(strategy_id):
                 size = 1
 
         elif strategy_id == 15:
-            # Nach 2 Gewinnen in Folge pausieren bis 1 Verlust, dann auf 2 erhöhen
             if state.get('paused', False):
                 if result < 0:
                     size = 2
@@ -162,7 +184,6 @@ def make_condition_func(strategy_id):
                     size = 1
 
         elif strategy_id == 16:
-            # Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust
             if state.get('paused', False):
                 if result < 0:
                     state['paused'] = False
@@ -181,7 +202,6 @@ def make_condition_func(strategy_id):
                     size = 0
 
         elif strategy_id == 17:
-            # Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1
             if result > 0 and state.get('last_result', 0) < 0:
                 size = 2
             else:
@@ -189,7 +209,6 @@ def make_condition_func(strategy_id):
             state['last_result'] = result
 
         elif strategy_id == 18:
-            # Nach 3 Gewinnen auf 3 erhöhen, nach 1 Verlust zurück auf 1
             if result > 0:
                 state['win_streak'] += 1
                 if state['win_streak'] >= 3:
@@ -199,7 +218,6 @@ def make_condition_func(strategy_id):
                 state['win_streak'] = 0
 
         elif strategy_id == 19:
-            # Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, sonst auf 1
             if result > 0:
                 state['win_streak'] += 1
                 state['loss_streak'] = 0
@@ -216,7 +234,6 @@ def make_condition_func(strategy_id):
                     size = 1
 
         elif strategy_id == 20:
-            # Nach 1 Gewinn auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, nach Gewinn zurück auf 1
             if result > 0:
                 if state.get('last_size', 1) == 3:
                     size = 1
@@ -238,7 +255,10 @@ def make_condition_func(strategy_id):
 def find_break_even_hit_rate(avg_win, avg_loss):
     return avg_loss / (avg_win + avg_loss)
 
-def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles):
+def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles, use_markov=False, p_win_after_win=0.7, p_win_after_loss=0.5):
+    """
+    Führt alle 20 Strategien aus. Je nach use_markov werden Trades mit oder ohne Korrelation erzeugt.
+    """
     descriptions = {
         1: "Konstante Positionsgröße 1",
         2: "Nach Gewinn auf 2 erhöhen, nach Verlust zurück auf 1",
@@ -265,8 +285,10 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     summary = {i: [] for i in range(1, 21)}
 
     for _ in range(num_simulations):
-        # Für jede Simulation eine neue dynamische Serie erzeugen
-        base_results = simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss)
+        if use_markov:
+            base_results = simulate_trades_markov(num_trades, hit_rate, avg_win, avg_loss, p_win_after_win, p_win_after_loss)
+        else:
+            base_results = simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss)
         for _ in range(num_mc_shuffles):
             np.random.shuffle(base_results)
 
@@ -293,7 +315,6 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
         ratio_max_dd = avg_profit / abs(max_dd) if max_dd != 0 else float('inf')
         summary_final.append((descriptions[i], avg_profit, avg_drawdown, ratio, min_profit, max_profit, min_dd, max_dd, avg_per_trade, ratio_max_dd))
 
-    # Sortierung: erst alle mit Gewinn/MaxDD >= 0 (absteigend), dann alle mit Gewinn/MaxDD < 0 (aufsteigend)
     positive = [row for row in summary_final if row[9] >= 0]
     negative = [row for row in summary_final if row[9] < 0]
     positive.sort(key=lambda x: x[9], reverse=True)
@@ -310,6 +331,9 @@ def main():
     parser.add_argument("--num_simulations", type=int, default=200, help="Anzahl der Simulationen (default: 200)")
     parser.add_argument("--num_trades", type=int, default=400, help="Anzahl der Trades pro Simulation (default: 400)")
     parser.add_argument("--num_mc_shuffles", type=int, default=200, help="Anzahl der Shuffles pro Simulation (default: 200)")
+    parser.add_argument("--use_markov", action="store_true", help="Korrelationen zwischen Trades (Markov-Kette) verwenden")
+    parser.add_argument("--p_win_after_win", type=float, default=0.7, help="P(Gewinn|Gewinn) für Markov-Modell")
+    parser.add_argument("--p_win_after_loss", type=float, default=0.5, help="P(Gewinn|Verlust) für Markov-Modell")
     args = parser.parse_args()
 
     print("\nEingabewerte:")
@@ -319,13 +343,21 @@ def main():
     print(f"Anzahl der Simulationen: {args.num_simulations}")
     print(f"Anzahl der Trades pro Simulation: {args.num_trades}")
     print(f"Anzahl der Shuffles pro Simulation: {args.num_mc_shuffles}")
+    print(f"Korrelationen (Markov): {args.use_markov}")
+    if args.use_markov:
+        print(f"P(Gewinn|Gewinn): {args.p_win_after_win}, P(Gewinn|Verlust): {args.p_win_after_loss}")
     breakeven = find_break_even_hit_rate(args.avg_win, args.avg_loss)
     print(f"Break-even-Trefferquote: {breakeven:.2%}")
 
-    summary = run_all_strategies(args.hit_rate, args.avg_win, args.avg_loss, args.num_trades, args.num_simulations, args.num_mc_shuffles)
+    summary = run_all_strategies(
+        args.hit_rate, args.avg_win, args.avg_loss, args.num_trades,
+        args.num_simulations, args.num_mc_shuffles,
+        use_markov=args.use_markov,
+        p_win_after_win=args.p_win_after_win,
+        p_win_after_loss=args.p_win_after_loss
+    )
 
     print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
-    # Neue, breitere Formatierung für lange Strategienamen
     header = (
         f"{'Strategie':<90} {'Ø Gewinn (€)':>14} {'Ø Drawdown (€)':>16} {'Verhältnis':>12} "
         f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
@@ -343,28 +375,21 @@ def main():
             print("-" * len(header))
 
     # Erweiterte Ausgabe: Beste 4 Strategien im Vergleich zu "Konstante Positionsgröße 1"
-    # Farbcode: Grün für beste, Rot für konstant
     from colorama import Fore, Style, init
     init(autoreset=True)
-
-    # Finde Index der Konstanten Positionsgröße 1
     konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
-
     print("\n\n\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
     print("--------------------------------------------------------------")
     for idx in range(4):
         if idx >= len(summary):
             break
-        # 1. Leerzeile
         print()
-        # 2. Beste Strategie in grün
         row = summary[idx]
         print(Fore.GREEN + (
             f"{row[0]:<90} {row[1]:14.2f} {row[2]:16.2f} {row[3]:12.2f} "
             f"{row[4]:12.2f} {row[5]:12.2f} {row[6]:14.2f} {row[7]:14.2f} "
             f"{row[8]:12.2f} {row[9]:18.2f}"
         ) + Style.RESET_ALL)
-        # 3. Konstante Positionsgröße 1 in rot
         if konst_idx is not None:
             konst_row = summary[konst_idx]
             print(Fore.RED + (
