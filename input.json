@@ -4,5 +4,7 @@
   "avg_loss": 219,
   "num_simulations": 200,
   "num_trades": 1000,
-  "num_mc_shuffles": 50
+  "num_mc_shuffles": 50,
+  "p_win_after_win": 0.8,
+  "p_win_after_loss": 0.4
 }
