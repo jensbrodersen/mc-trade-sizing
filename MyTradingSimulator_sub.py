@@ -1,7 +1,43 @@
-# How to run: D:\documents\MyTrading\Tools_alles\python> python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+# ------------------------------------------------------------------------------------------
+# Trading-Strategie-Simulator mit Monte-Carlo-Analyse und adaptiver Positionsgrößensteuerung
 #
-# Mit Korrelationen (Markov-Modell):
-# python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
+# Übersicht:
+# Dieses Skript simuliert 20 verschiedene Trading-Strategien, bei denen die Positionsgröße
+# dynamisch an Gewinn- oder Verlustserien angepasst wird. Es werden klassische Martingale-,
+# Anti-Martingale-Ansätze sowie Strategien mit Pausenphasen nach Gewinnserien getestet.
+#
+# Funktionsweise:
+# - Für gegebene Trefferquote, durchschnittlichen Gewinn und Verlust sowie Trade-Anzahl
+#   werden zufällige Trade-Serien erzeugt (Monte-Carlo-Prinzip).
+# - Optional kann ein Markov-Modell (Korrelation zwischen Trades) aktiviert werden.
+# - Für jede Strategie wird die Entwicklung des Kapitals und der maximale Drawdown
+#   simuliert und ausgewertet.
+# - Die Positionsgröße wird je nach Strategie nach bestimmten Regeln erhöht, reduziert
+#   oder pausiert (z.B. nach x Gewinnen/Verlusten).
+#
+# Output und Bewertung:
+# - Für jede Strategie werden folgende Kennzahlen berechnet:
+#   * Ø Gewinn (€): Durchschnittlicher Gesamtgewinn über alle Simulationen.
+#   * Ø Drawdown (€): Durchschnittlicher maximaler Kapitalrückgang.
+#   * Verhältnis: Verhältnis von Ø Gewinn zu Ø Drawdown (Chance-Risiko).
+#   * Min/Max (€): Minimaler und maximaler Gesamtgewinn.
+#   * Min DD/Max DD (€): Minimaler und maximaler Drawdown.
+#   * Ø/Trade: Durchschnittlicher Gewinn pro Trade.
+#   * Gewinn/MaxDD: Verhältnis von Ø Gewinn zu maximalem Drawdown.
+# - Die Strategien werden nach Gewinn/MaxDD absteigend sortiert, um die profitabelsten
+#   Varianten hervorzuheben.
+#
+# Bewertung:
+# Die Auswertung zeigt, wie sich verschiedene Anpassungen der Positionsgröße auf
+# Gewinn, Risiko und Robustheit auswirken. Besonders Strategien mit Pausen oder
+# gezielter Erhöhung nach Verlusten können das Chance-Risiko-Profil verbessern,
+# bergen aber auch Risiken bei langen Verlustserien.
+#
+# Nutzung:
+# Das Skript wird über die Kommandozeile gestartet. Beispielaufruf:
+#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
+# ------------------------------------------------------------------------------------------
 
 import numpy as np
 import argparse
@@ -97,8 +133,9 @@ def strategy_dynamic(results, condition_func):
     return np.sum(equity), calculate_drawdown(cumulative_equity)
 
 def make_condition_func(strategy_id):
+    # Vollständige Logik für alle 20 Strategien (siehe vorherige Versionen)
     def func(result, size, state):
-        # ... (wie gehabt, alle Strategien) ...
+        # ... (Strategie-Logik wie gehabt, siehe vorherige Versionen) ...
         # (Hier bleibt der Code unverändert, siehe vorherige Versionen)
         # Siehe vorherige Versionen für Details
         if strategy_id == 2:
@@ -324,7 +361,7 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     return summary_final
 
 def main():
-    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien")
+    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien mit/ohne Markov-Korrelationen")
     parser.add_argument("--hit_rate", type=float, required=True, help="Trefferquote, z.B. 0.7")
     parser.add_argument("--avg_win", type=float, required=True, help="Durchschnittlicher Gewinn pro Trade")
     parser.add_argument("--avg_loss", type=float, required=True, help="Durchschnittlicher Verlust pro Trade")
@@ -375,28 +412,31 @@ def main():
             print("-" * len(header))
 
     # Erweiterte Ausgabe: Beste 4 Strategien im Vergleich zu "Konstante Positionsgröße 1"
-    from colorama import Fore, Style, init
-    init(autoreset=True)
-    konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
-    print("\n\n\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
-    print("--------------------------------------------------------------")
-    for idx in range(4):
-        if idx >= len(summary):
-            break
-        print()
-        row = summary[idx]
-        print(Fore.GREEN + (
-            f"{row[0]:<90} {row[1]:14.2f} {row[2]:16.2f} {row[3]:12.2f} "
-            f"{row[4]:12.2f} {row[5]:12.2f} {row[6]:14.2f} {row[7]:14.2f} "
-            f"{row[8]:12.2f} {row[9]:18.2f}"
-        ) + Style.RESET_ALL)
-        if konst_idx is not None:
-            konst_row = summary[konst_idx]
-            print(Fore.RED + (
-                f"{konst_row[0]:<90} {konst_row[1]:14.2f} {konst_row[2]:16.2f} {konst_row[3]:12.2f} "
-                f"{konst_row[4]:12.2f} {konst_row[5]:12.2f} {konst_row[6]:14.2f} {konst_row[7]:14.2f} "
-                f"{konst_row[8]:12.2f} {konst_row[9]:18.2f}"
+    try:
+        from colorama import Fore, Style, init
+        init(autoreset=True)
+        konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
+        print("\n\n\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
+        print("--------------------------------------------------------------")
+        for idx in range(4):
+            if idx >= len(summary):
+                break
+            print()
+            row = summary[idx]
+            print(Fore.GREEN + (
+                f"{row[0]:<90} {row[1]:14.2f} {row[2]:16.2f} {row[3]:12.2f} "
+                f"{row[4]:12.2f} {row[5]:12.2f} {row[6]:14.2f} {row[7]:14.2f} "
+                f"{row[8]:12.2f} {row[9]:18.2f}"
             ) + Style.RESET_ALL)
+            if konst_idx is not None:
+                konst_row = summary[konst_idx]
+                print(Fore.RED + (
+                    f"{konst_row[0]:<90} {konst_row[1]:14.2f} {konst_row[2]:16.2f} {konst_row[3]:12.2f} "
+                    f"{konst_row[4]:12.2f} {konst_row[5]:12.2f} {konst_row[6]:14.2f} {konst_row[7]:14.2f} "
+                    f"{konst_row[8]:12.2f} {konst_row[9]:18.2f}"
+                ) + Style.RESET_ALL)
+    except ImportError:
+        pass
 
 if __name__ == "__main__":
     main()

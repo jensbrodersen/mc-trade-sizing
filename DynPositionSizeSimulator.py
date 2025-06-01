@@ -39,6 +39,7 @@ def main():
             print(f"Fehler: '{key}' fehlt in der JSON-Datei.")
             sys.exit(1)
 
+    # Markov-Parameter aus JSON einlesen (mit Defaultwerten)
     p_win_after_win = args.get("p_win_after_win", 0.7)
     p_win_after_loss = args.get("p_win_after_loss", 0.5)
 
