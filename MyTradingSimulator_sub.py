@@ -9,7 +9,7 @@
 # Funktionsweise:
 # - Für gegebene Trefferquote, durchschnittlichen Gewinn und Verlust sowie Trade-Anzahl
 #   werden zufällige Trade-Serien erzeugt (Monte-Carlo-Prinzip).
-# - Optional kann ein Markov-Modell (Korrelation zwischen Trades) aktiviert werden.
+# - Optional kann ein Markov-Modell (1. oder 2. Ordnung) oder ein Regime-Switching-Modell aktiviert werden.
 # - Für jede Strategie wird die Entwicklung des Kapitals und der maximale Drawdown
 #   simuliert und ausgewertet.
 # - Die Positionsgröße wird je nach Strategie nach bestimmten Regeln erhöht, reduziert
@@ -37,18 +37,15 @@
 # Das Skript wird über die Kommandozeile gestartet. Beispielaufruf:
 #   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
 #   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
+#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov2 --p_win_ww 0.8 --p_win_wl 0.6 --p_win_lw 0.5 --p_win_ll 0.3
+#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_regime --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},{"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},{"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'
 # ------------------------------------------------------------------------------------------
 
 import numpy as np
 import argparse
+import json as pyjson
 
 def simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss):
-    """
-    Erzeugt eine Serie von Trades mit dynamischer Trefferquote und dynamischen
-    Gewinn-/Verlustwerten, um Gewinn- und Verlustserien (Streaks) zu simulieren.
-    Es werden verschiedene Marktphasen mit unterschiedlichen Wahrscheinlichkeiten
-    und Auszahlungsprofilen erzeugt.
-    """
     phases = [
         {'length': int(num_trades * 0.2), 'hit_rate': min(hit_rate + 0.2, 1.0), 'avg_win': avg_win * 1.1, 'avg_loss': avg_loss * 0.9},
         {'length': int(num_trades * 0.2), 'hit_rate': max(hit_rate - 0.3, 0.05), 'avg_win': avg_win * 0.9, 'avg_loss': avg_loss * 1.1},
@@ -74,11 +71,6 @@ def simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss):
     return np.array(results)
 
 def simulate_trades_markov(num_trades, hit_rate, avg_win, avg_loss, p_win_after_win=0.7, p_win_after_loss=0.5):
-    """
-    Erzeugt eine Serie von Trades mit Korrelation zwischen den Trades (Markov-Kette).
-    p_win_after_win: Wahrscheinlichkeit für einen Gewinn nach einem Gewinn
-    p_win_after_loss: Wahrscheinlichkeit für einen Gewinn nach einem Verlust
-    """
     results = []
     last_win = np.random.rand() < hit_rate
     if last_win:
@@ -97,6 +89,49 @@ def simulate_trades_markov(num_trades, hit_rate, avg_win, avg_loss, p_win_after_
         last_win = win
     return np.array(results)
 
+def simulate_trades_markov2(num_trades, hit_rate, avg_win, avg_loss, p_win_ww=0.8, p_win_wl=0.6, p_win_lw=0.5, p_win_ll=0.3):
+    results = []
+    last = [np.random.rand() < hit_rate, np.random.rand() < hit_rate]
+    for win in last:
+        results.append(avg_win if win else -avg_loss)
+    for _ in range(2, num_trades):
+        if last[-2] and last[-1]:
+            p = p_win_ww
+        elif last[-2] and not last[-1]:
+            p = p_win_wl
+        elif not last[-2] and last[-1]:
+            p = p_win_lw
+        else:
+            p = p_win_ll
+        win = np.random.rand() < p
+        results.append(avg_win if win else -avg_loss)
+        last = [last[-1], win]
+    return np.array(results)
+
+def simulate_trades_regime_switch(num_trades, regimes=None):
+    if regimes is None:
+        regimes = [
+            {'length': int(num_trades * 0.3), 'hit_rate': 0.9, 'avg_win': 200, 'avg_loss': 100},
+            {'length': int(num_trades * 0.2), 'hit_rate': 0.5, 'avg_win': 100, 'avg_loss': 100},
+            {'length': num_trades - int(num_trades * 0.5), 'hit_rate': 0.2, 'avg_win': 100, 'avg_loss': 200},
+        ]
+    results = []
+    trades_left = num_trades
+    for regime in regimes:
+        l = min(regime['length'], trades_left)
+        if l <= 0:
+            continue
+        phase_results = np.random.choice(
+            [regime['avg_win'], -regime['avg_loss']],
+            size=l,
+            p=[regime['hit_rate'], 1 - regime['hit_rate']]
+        )
+        results.extend(phase_results)
+        trades_left -= l
+        if trades_left <= 0:
+            break
+    return np.array(results)
+
 def calculate_drawdown(equity_curve):
     peak = np.maximum.accumulate(equity_curve)
     drawdowns = equity_curve - peak
@@ -111,15 +146,16 @@ def strategy_static(results):
 def strategy_dynamic(results, condition_func):
     equity = []
     position_size = 1
-    state = {'win_streak': 0, 'loss_streak': 0, 'mode': 'trading'}
+    state = {'win_streak': 0, 'loss_streak': 0, 'mode': 'trading', 'last_result': 0, 'last2_result': 0}
 
     for i in range(len(results)):
         trade_result = results[i] * position_size
-        if state['mode'] == 'trading':
+        if state.get('mode', 'trading') == 'trading':
             equity.append(trade_result)
         else:
             equity.append(0)
 
+        # Update streaks
         if results[i] > 0:
             state['win_streak'] += 1
             state['loss_streak'] = 0
@@ -127,57 +163,139 @@ def strategy_dynamic(results, condition_func):
             state['loss_streak'] += 1
             state['win_streak'] = 0
 
+        # Für Strategien, die auf die letzten Trades schauen
+        state['last2_result'] = state.get('last_result', 0)
+        state['last_result'] = results[i]
+
         position_size, state = condition_func(results[i], position_size, state)
 
     cumulative_equity = np.cumsum(equity)
     return np.sum(equity), calculate_drawdown(cumulative_equity)
 
 def make_condition_func(strategy_id):
-    # Vollständige Logik für alle 20 Strategien (siehe vorherige Versionen)
     def func(result, size, state):
-        # ... (Strategie-Logik wie gehabt, siehe vorherige Versionen) ...
-        # (Hier bleibt der Code unverändert, siehe vorherige Versionen)
-        # Siehe vorherige Versionen für Details
-        if strategy_id == 2:
-            if result > 0:
-                size = 2
-            else:
-                size = 1
+        # 1: Konstante Positionsgröße
+        if strategy_id == 1:
+            size = 1
 
-        elif strategy_id in [3, 4, 5]:
-            limit = strategy_id - 2
+        # 2: Nach Gewinn auf 2 erhöhen, nach Verlust zurück auf 1
+        elif strategy_id == 2:
+            size = 2 if result > 0 else 1
+
+        # 3: Nach Gewinn auf 2 erhöhen, nach Verlust oder 2 Gewinnen zurück auf 1
+        elif strategy_id == 3:
             if result > 0:
-                if size == 1:
-                    size = 2
                 state['win_streak'] += 1
-                if state['win_streak'] >= limit:
+                if state['win_streak'] >= 2:
                     size = 1
-                    state['win_streak'] = 0
+                else:
+                    size = 2
             else:
                 size = 1
                 state['win_streak'] = 0
 
-        elif strategy_id in [6, 7, 8]:
-            limit = strategy_id - 5
-            if result < 0:
-                state['loss_streak'] += 1
-                if state['loss_streak'] >= limit:
+        # 4: Nach Gewinn auf 2 erhöhen, nach Verlust oder 3 Gewinnen zurück auf 1
+        elif strategy_id == 4:
+            if result > 0:
+                state['win_streak'] += 1
+                if state['win_streak'] >= 3:
+                    size = 1
+                else:
                     size = 2
             else:
+                size = 1
+                state['win_streak'] = 0
+
+        # 5: Nach Gewinn auf 2 erhöhen, nach Verlust oder 4 Gewinnen zurück auf 1
+        elif strategy_id == 5:
+            if result > 0:
+                state['win_streak'] += 1
+                if state['win_streak'] >= 4:
+                    size = 1
+                else:
+                    size = 2
+            else:
+                size = 1
+                state['win_streak'] = 0
+
+        # 6: Nach Verlust auf 2 erhöhen, nach Gewinn zurück auf 1
+        elif strategy_id == 6:
+            size = 2 if result <= 0 else 1
+
+        # 7: Nach 2 Verlusten auf 2 erhöhen, nach Gewinn zurück auf 1
+        elif strategy_id == 7:
+            if result > 0:
                 size = 1
                 state['loss_streak'] = 0
+            else:
+                state['loss_streak'] += 1
+                size = 2 if state['loss_streak'] >= 2 else 1
 
-        elif strategy_id in [9, 10, 11, 12]:
-            limit = strategy_id - 8
-            if state['mode'] == 'trading':
+        # 8: Nach 3 Verlusten auf 2 erhöhen, nach Gewinn zurück auf 1
+        elif strategy_id == 8:
+            if result > 0:
+                size = 1
+                state['loss_streak'] = 0
+            else:
+                state['loss_streak'] += 1
+                size = 2 if state['loss_streak'] >= 3 else 1
+
+        # 9: Nach 1 Gewinn pausieren bis zum nächsten Verlust
+        elif strategy_id == 9:
+            if state.get('mode', 'trading') == 'trading':
+                if result > 0:
+                    state['mode'] = 'pause'
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+            size = 1
+
+        # 10: Nach 2 Gewinnen pausieren bis zum nächsten Verlust
+        elif strategy_id == 10:
+            if state.get('mode', 'trading') == 'trading':
                 if result > 0:
                     state['win_streak'] += 1
-                    if state['win_streak'] >= limit:
-                        state['mode'] = 'waiting'
-            elif result < 0:
-                state['mode'] = 'trading'
-                state['win_streak'] = 0
+                    if state['win_streak'] >= 2:
+                        state['mode'] = 'pause'
+                else:
+                    state['win_streak'] = 0
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+                    state['win_streak'] = 0
+            size = 1
 
+        # 11: Nach 3 Gewinnen pausieren bis zum nächsten Verlust
+        elif strategy_id == 11:
+            if state.get('mode', 'trading') == 'trading':
+                if result > 0:
+                    state['win_streak'] += 1
+                    if state['win_streak'] >= 3:
+                        state['mode'] = 'pause'
+                else:
+                    state['win_streak'] = 0
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+                    state['win_streak'] = 0
+            size = 1
+
+        # 12: Nach 4 Gewinnen pausieren bis zum nächsten Verlust
+        elif strategy_id == 12:
+            if state.get('mode', 'trading') == 'trading':
+                if result > 0:
+                    state['win_streak'] += 1
+                    if state['win_streak'] >= 4:
+                        state['mode'] = 'pause'
+                else:
+                    state['win_streak'] = 0
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+                    state['win_streak'] = 0
+            size = 1
+
+        # 13: Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1
         elif strategy_id == 13:
             if result > 0:
                 state['win_streak'] += 1
@@ -185,66 +303,55 @@ def make_condition_func(strategy_id):
                     size = 2
             else:
                 state['loss_streak'] += 1
-                state['win_streak'] = 0
                 if state['loss_streak'] >= 2:
                     size = 1
-                    state['loss_streak'] = 0
 
+        # 14: Nach 1 Gewinn und 1 Verlust auf 2 erhöhen, sonst auf 1
         elif strategy_id == 14:
-            if result > 0:
-                state['win_streak'] += 1
-            else:
-                state['loss_streak'] += 1
-            if state['win_streak'] >= 1 and state['loss_streak'] >= 1:
+            if result > 0 and state.get('last2_result', 0) <= 0:
                 size = 2
-                state['win_streak'] = 0
-                state['loss_streak'] = 0
             else:
                 size = 1
 
+        # 15: Nach 2 Gewinnen in Folge pausieren bis 1 Verlust, dann auf 2 erhöhen
         elif strategy_id == 15:
-            if state.get('paused', False):
-                if result < 0:
-                    size = 2
-                    state['paused'] = False
-                else:
-                    size = 0
-            else:
+            if state.get('mode', 'trading') == 'trading':
                 if result > 0:
                     state['win_streak'] += 1
                     if state['win_streak'] >= 2:
-                        state['paused'] = True
-                        state['win_streak'] = 0
-                        size = 0
+                        state['mode'] = 'pause'
+                        size = 2
                 else:
                     state['win_streak'] = 0
-                    size = 1
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+                    state['win_streak'] = 0
+            # size bleibt wie oben gesetzt
 
+        # 16: Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust
         elif strategy_id == 16:
-            if state.get('paused', False):
-                if result < 0:
-                    state['paused'] = False
-                    size = 2
+            if state.get('mode', 'trading') == 'trading':
+                if result > 0:
+                    state['mode'] = 'pause'
+                    size = 1
                 else:
-                    size = 0
-            else:
-                if result < 0:
                     state['loss_streak'] += 1
                     if state['loss_streak'] >= 2:
                         size = 2
-                        state['loss_streak'] = 0
-                else:
-                    state['loss_streak'] = 0
-                    state['paused'] = True
-                    size = 0
+            elif state.get('mode') == 'pause':
+                if result <= 0:
+                    state['mode'] = 'trading'
+            # size bleibt wie oben gesetzt
 
+        # 17: Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1
         elif strategy_id == 17:
-            if result > 0 and state.get('last_result', 0) < 0:
+            if result > 0 and state.get('last2_result', 0) <= 0:
                 size = 2
             else:
                 size = 1
-            state['last_result'] = result
 
+        # 18: Nach 3 Gewinnen auf 3 erhöhen, nach 1 Verlust zurück auf 1
         elif strategy_id == 18:
             if result > 0:
                 state['win_streak'] += 1
@@ -254,48 +361,41 @@ def make_condition_func(strategy_id):
                 size = 1
                 state['win_streak'] = 0
 
+        # 19: Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, sonst auf 1
         elif strategy_id == 19:
-            if result > 0:
-                state['win_streak'] += 1
-                state['loss_streak'] = 0
-                if state['win_streak'] >= 2:
-                    size = 2
-                else:
-                    size = 1
+            if state['win_streak'] >= 2:
+                size = 2
+            elif state['loss_streak'] >= 2:
+                size = 3
             else:
-                state['loss_streak'] += 1
-                state['win_streak'] = 0
-                if state['loss_streak'] >= 2:
-                    size = 3
-                else:
-                    size = 1
+                size = 1
 
+        # 20: Nach 1 Gewinn auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, nach Gewinn zurück auf 1
         elif strategy_id == 20:
             if result > 0:
-                if state.get('last_size', 1) == 3:
-                    size = 1
-                else:
-                    size = 2
-                state['loss_streak'] = 0
+                size = 1
+            elif state['loss_streak'] >= 2:
+                size = 3
+            elif result > 0:
+                size = 2
             else:
-                state['loss_streak'] += 1
-                if state['loss_streak'] >= 2:
-                    size = 3
-                else:
-                    size = 1
-            state['last_size'] = size
+                size = 1
+
+        else:
+            size = 1
 
         return size, state
-
     return func
 
 def find_break_even_hit_rate(avg_win, avg_loss):
     return avg_loss / (avg_win + avg_loss)
 
-def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles, use_markov=False, p_win_after_win=0.7, p_win_after_loss=0.5):
-    """
-    Führt alle 20 Strategien aus. Je nach use_markov werden Trades mit oder ohne Korrelation erzeugt.
-    """
+def run_all_strategies(
+    hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles,
+    use_markov=False, p_win_after_win=0.7, p_win_after_loss=0.5,
+    use_markov2=False, p_win_ww=0.8, p_win_wl=0.6, p_win_lw=0.5, p_win_ll=0.3,
+    use_regime=False, regimes=None
+):
     descriptions = {
         1: "Konstante Positionsgröße 1",
         2: "Nach Gewinn auf 2 erhöhen, nach Verlust zurück auf 1",
@@ -322,19 +422,28 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     summary = {i: [] for i in range(1, 21)}
 
     for _ in range(num_simulations):
-        if use_markov:
-            base_results = simulate_trades_markov(num_trades, hit_rate, avg_win, avg_loss, p_win_after_win, p_win_after_loss)
+        if use_regime:
+            base_results = simulate_trades_regime_switch(num_trades, regimes)
+        elif use_markov2:
+            base_results = simulate_trades_markov2(
+                num_trades, hit_rate, avg_win, avg_loss,
+                p_win_ww, p_win_wl, p_win_lw, p_win_ll
+            )
+        elif use_markov:
+            base_results = simulate_trades_markov(
+                num_trades, hit_rate, avg_win, avg_loss,
+                p_win_after_win, p_win_after_loss
+            )
         else:
             base_results = simulate_trades_dynamic(num_trades, hit_rate, avg_win, avg_loss)
         for _ in range(num_mc_shuffles):
             np.random.shuffle(base_results)
-
-            profit, dd = strategy_static(base_results)
-            summary[1].append((profit, dd))
-
-            for i in range(2, 21):
-                cond_func = make_condition_func(i)
-                profit, dd = strategy_dynamic(base_results, cond_func)
+            for i in range(1, 21):
+                if i == 1:
+                    profit, dd = strategy_static(base_results)
+                else:
+                    cond_func = make_condition_func(i)
+                    profit, dd = strategy_dynamic(base_results, cond_func)
                 summary[i].append((profit, dd))
 
     summary_final = []
@@ -361,37 +470,67 @@ def run_all_strategies(hit_rate, avg_win, avg_loss, num_trades, num_simulations,
     return summary_final
 
 def main():
-    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien mit/ohne Markov-Korrelationen")
+    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien mit/ohne Markov-Korrelationen, Markov 2. Ordnung und Regime-Switching")
     parser.add_argument("--hit_rate", type=float, required=True, help="Trefferquote, z.B. 0.7")
     parser.add_argument("--avg_win", type=float, required=True, help="Durchschnittlicher Gewinn pro Trade")
     parser.add_argument("--avg_loss", type=float, required=True, help="Durchschnittlicher Verlust pro Trade")
     parser.add_argument("--num_simulations", type=int, default=200, help="Anzahl der Simulationen (default: 200)")
     parser.add_argument("--num_trades", type=int, default=400, help="Anzahl der Trades pro Simulation (default: 400)")
     parser.add_argument("--num_mc_shuffles", type=int, default=200, help="Anzahl der Shuffles pro Simulation (default: 200)")
-    parser.add_argument("--use_markov", action="store_true", help="Korrelationen zwischen Trades (Markov-Kette) verwenden")
-    parser.add_argument("--p_win_after_win", type=float, default=0.7, help="P(Gewinn|Gewinn) für Markov-Modell")
-    parser.add_argument("--p_win_after_loss", type=float, default=0.5, help="P(Gewinn|Verlust) für Markov-Modell")
+    parser.add_argument("--use_markov", action="store_true", help="Korrelationen zwischen Trades (Markov-Kette, 1. Ordnung) verwenden")
+    parser.add_argument("--p_win_after_win", type=float, default=0.7, help="P(Gewinn|Gewinn) für Markov-Modell 1. Ordnung")
+    parser.add_argument("--p_win_after_loss", type=float, default=0.5, help="P(Gewinn|Verlust) für Markov-Modell 1. Ordnung")
+    parser.add_argument("--use_markov2", action="store_true", help="Markov-Modell 2. Ordnung verwenden")
+    parser.add_argument("--p_win_ww", type=float, default=0.8, help="P(Gewinn|Gewinn, Gewinn) für Markov 2. Ordnung")
+    parser.add_argument("--p_win_wl", type=float, default=0.6, help="P(Gewinn|Gewinn, Verlust) für Markov 2. Ordnung")
+    parser.add_argument("--p_win_lw", type=float, default=0.5, help="P(Gewinn|Verlust, Gewinn) für Markov 2. Ordnung")
+    parser.add_argument("--p_win_ll", type=float, default=0.3, help="P(Gewinn|Verlust, Verlust) für Markov 2. Ordnung")
+    parser.add_argument("--use_regime", action="store_true", help="Regime-Switching-Modell verwenden")
+    parser.add_argument("--regimes", type=str, default=None, help="Regime-Liste als JSON-String")
     args = parser.parse_args()
 
-    print("\nEingabewerte:")
+    # --- Auffälliger Block für den aktuellen Fall ---
+    print("\n" + "="*90)
+    print("AKTUELLER SIMULATIONSFALL:")
     print(f"Trefferquote: {args.hit_rate:.2%}")
+    if args.use_regime:
+        print("Modus: Regime-Switching")
+        if args.regimes:
+            print(f"Regimes: {args.regimes}")
+    elif args.use_markov2:
+        print("Modus: Markov 2. Ordnung")
+        print(f"P(Gewinn|GG): {args.p_win_ww}, P(Gewinn|GV): {args.p_win_wl}, P(Gewinn|VG): {args.p_win_lw}, P(Gewinn|VV): {args.p_win_ll}")
+    elif args.use_markov:
+        print("Modus: Markov 1. Ordnung")
+        print(f"P(Gewinn|Gewinn): {args.p_win_after_win}, P(Gewinn|Verlust): {args.p_win_after_loss}")
+    else:
+        print("Modus: Ohne Markov")
+    print("="*90 + "\n")
+
     print(f"Durchschnittlicher Gewinn pro Trade: {args.avg_win} €")
     print(f"Durchschnittlicher Verlust pro Trade: {args.avg_loss} €")
     print(f"Anzahl der Simulationen: {args.num_simulations}")
     print(f"Anzahl der Trades pro Simulation: {args.num_trades}")
     print(f"Anzahl der Shuffles pro Simulation: {args.num_mc_shuffles}")
-    print(f"Korrelationen (Markov): {args.use_markov}")
-    if args.use_markov:
-        print(f"P(Gewinn|Gewinn): {args.p_win_after_win}, P(Gewinn|Verlust): {args.p_win_after_loss}")
     breakeven = find_break_even_hit_rate(args.avg_win, args.avg_loss)
     print(f"Break-even-Trefferquote: {breakeven:.2%}")
+
+    # Regimes ggf. als JSON laden
+    regimes = pyjson.loads(args.regimes) if args.use_regime and args.regimes else None
 
     summary = run_all_strategies(
         args.hit_rate, args.avg_win, args.avg_loss, args.num_trades,
         args.num_simulations, args.num_mc_shuffles,
         use_markov=args.use_markov,
         p_win_after_win=args.p_win_after_win,
-        p_win_after_loss=args.p_win_after_loss
+        p_win_after_loss=args.p_win_after_loss,
+        use_markov2=args.use_markov2,
+        p_win_ww=args.p_win_ww,
+        p_win_wl=args.p_win_wl,
+        p_win_lw=args.p_win_lw,
+        p_win_ll=args.p_win_ll,
+        use_regime=args.use_regime,
+        regimes=regimes
     )
 
     print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
@@ -402,6 +541,37 @@ def main():
     )
     print(header)
     print("=" * len(header))
+
+    # a) Leerzeile
+    print()
+
+    # b) Modelltyp in gelber Schrift + Trefferquote (neues Format)
+    try:
+        from colorama import Fore, Style
+        if args.use_regime:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Regime-Switching-Modell"
+        elif args.use_markov2:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 2. Ordnung"
+        elif args.use_markov:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 1. Ordnung"
+        else:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Kein Markov"
+        print(Fore.YELLOW + f"*** {model_label} ***" + Style.RESET_ALL)
+    except ImportError:
+        if args.use_regime:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Regime-Switching-Modell"
+        elif args.use_markov2:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 2. Ordnung"
+        elif args.use_markov:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 1. Ordnung"
+        else:
+            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Kein Markov"
+        print(f"*** {model_label} ***")
+
+    # c) Leerzeile
+    print()
+
+    # d) Originale Ergebnistabelle
     for idx, (description, profit, dd, ratio, min_p, max_p, min_d, max_d, avg_per_trade, ratio_max_dd) in enumerate(summary):
         print(
             f"{description:<90} {profit:14.2f} {dd:16.2f} {ratio:12.2f} "

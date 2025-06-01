@@ -39,13 +39,21 @@ def main():
             print(f"Fehler: '{key}' fehlt in der JSON-Datei.")
             sys.exit(1)
 
-    # Markov-Parameter aus JSON einlesen (mit Defaultwerten)
+    # Markov-Parameter 1. Ordnung
     p_win_after_win = args.get("p_win_after_win", 0.7)
     p_win_after_loss = args.get("p_win_after_loss", 0.5)
+    # Markov-Parameter 2. Ordnung
+    p_win_ww = args.get("p_win_ww", 0.8)
+    p_win_wl = args.get("p_win_wl", 0.6)
+    p_win_lw = args.get("p_win_lw", 0.5)
+    p_win_ll = args.get("p_win_ll", 0.3)
+    # Regime-Switching-Parameter
+    regimes = args.get("regimes", None)
 
     simulation_cmds = []
     for i, hit_rate in enumerate(hit_rates, start=1):
-        print(f"\n--- Run {2*i-1}/6: hit_rate = {hit_rate:.2f} (ohne Markov) ---\n")
+        # 1. Ohne Markov
+        print(f"\n--- Run {4*i-3}/12: hit_rate = {hit_rate:.2f} (ohne Markov) ---\n")
         cmd = [
             sys.executable,
             os.path.join(script_dir, "MyTradingSimulator_sub.py"),
@@ -56,15 +64,35 @@ def main():
             "--num_trades", str(args["num_trades"]),
             "--num_mc_shuffles", str(args["num_mc_shuffles"])
         ]
-        simulation_cmds.append((2*i-1, cmd, f"ohne Markov"))
+        simulation_cmds.append((4*i-3, cmd, "ohne Markov"))
 
-        print(f"\n--- Run {2*i}/6: hit_rate = {hit_rate:.2f} (mit Markov) ---\n")
-        cmd_markov = cmd + [
+        # 2. Markov 1. Ordnung
+        print(f"\n--- Run {4*i-2}/12: hit_rate = {hit_rate:.2f} (mit Markov 1.Ord) ---\n")
+        cmd_markov1 = cmd + [
             "--use_markov",
             "--p_win_after_win", str(p_win_after_win),
             "--p_win_after_loss", str(p_win_after_loss)
         ]
-        simulation_cmds.append((2*i, cmd_markov, f"mit Markov"))
+        simulation_cmds.append((4*i-2, cmd_markov1, "mit Markov 1.Ord"))
+
+        # 3. Markov 2. Ordnung
+        print(f"\n--- Run {4*i-1}/12: hit_rate = {hit_rate:.2f} (mit Markov 2.Ord) ---\n")
+        cmd_markov2 = cmd + [
+            "--use_markov2",
+            "--p_win_ww", str(p_win_ww),
+            "--p_win_wl", str(p_win_wl),
+            "--p_win_lw", str(p_win_lw),
+            "--p_win_ll", str(p_win_ll)
+        ]
+        simulation_cmds.append((4*i-1, cmd_markov2, "mit Markov 2.Ord"))
+
+        # 4. Regime-Switching
+        print(f"\n--- Run {4*i}/12: hit_rate = {hit_rate:.2f} (mit Regime-Switching-Modell) ---\n")
+        cmd_regime = cmd + ["--use_regime"]
+        if regimes:
+            import json as pyjson
+            cmd_regime += ["--regimes", pyjson.dumps(regimes)]
+        simulation_cmds.append((4*i, cmd_regime, "mit Regime-Switching-Modell"))
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         future_to_run = {executor.submit(run_simulation, cmd): (idx, label) for idx, cmd, label in simulation_cmds}
@@ -80,5 +108,4 @@ def main():
                 sys.exit(1)
 
 if __name__ == "__main__":
-    main()
-    
+    main()    

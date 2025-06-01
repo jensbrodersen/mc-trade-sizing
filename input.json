@@ -6,5 +6,14 @@
   "num_trades": 1000,
   "num_mc_shuffles": 50,
   "p_win_after_win": 0.8,
-  "p_win_after_loss": 0.4
+  "p_win_after_loss": 0.4,
+  "p_win_ww": 0.8,
+  "p_win_wl": 0.6,
+  "p_win_lw": 0.5,
+  "p_win_ll": 0.3,
+  "regimes": [
+    {"length": 300, "hit_rate": 0.9, "avg_win": 200, "avg_loss": 100},
+    {"length": 200, "hit_rate": 0.5, "avg_win": 100, "avg_loss": 100},
+    {"length": 500, "hit_rate": 0.2, "avg_win": 100, "avg_loss": 200}
+  ]
 }
