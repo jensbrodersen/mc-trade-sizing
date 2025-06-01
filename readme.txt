@@ -1,5 +1,5 @@
-DpsSimulator.py - Übersicht
-=====================================
+dps.py (Dynamic Position Sizing Simulator) - Übersicht
+======================================================
 
 Dieses Skript simuliert und vergleicht 20 verschiedene Positionsgrößen-
 Strategien für eine Serie von Trading-Trades mit festen Gewinn- und
