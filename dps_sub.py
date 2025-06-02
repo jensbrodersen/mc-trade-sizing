@@ -35,10 +35,10 @@
 #
 # Nutzung:
 # Das Skript wird über die Kommandozeile gestartet. Beispielaufruf:
-#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
-#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
-#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov2 --p_win_ww 0.8 --p_win_wl 0.6 --p_win_lw 0.5 --p_win_ll 0.3
-#   python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_regime --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},{"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},{"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'
+#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
+#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov2 --p_win_ww 0.8 --p_win_wl 0.6 --p_win_lw 0.5 --p_win_ll 0.3
+#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_regime --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},{"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},{"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'
 # ------------------------------------------------------------------------------------------
 
 import numpy as np

@@ -48,17 +48,35 @@ def ansi_to_html(text):
 def highlight_top4_section(html):
     """
     Hebt den Abschnitt 'Top 4 Strategien im Vergleich zu ...' im HTML besonders hervor,
-    aber mit gleicher Schriftgröße wie die übrigen Tabellen.
+    gibt ihn exakt im gewünschten Konsolen-Tabellenformat aus,
+    aber mit kleinerer Schrift, damit alles in den gelben Kasten passt.
+    Schriftart ist überall identisch: monospace.
     """
     import re
-    pattern = r'(Top 4 Strategien im Vergleich zu .+?:<br>[\s\S]+?)(?=<br><br>|</div>|$)'
+    header = (
+        "Strategie".ljust(90) +
+        "Ø Gewinn (€)".rjust(14) +
+        "Ø Drawdown (€)".rjust(16) +
+        "Verhältnis".rjust(12) +
+        "Min (€)".rjust(12) +
+        "Max (€)".rjust(12) +
+        "Min DD (€)".rjust(14) +
+        "Max DD (€)".rjust(14) +
+        "Ø/Trade".rjust(12) +
+        "Gewinn/MaxDD".rjust(18)
+    )
+    trennlinie = "=" * len(header)
+    pattern = r'(Top 4 Strategien im Vergleich zu .+?:<br>)([\s\S]+?)(?=<br><br>|</div>|$)'
     def repl(match):
+        values = match.group(2).strip('<br>\n').replace('<br>', '\n')
+        values = re.sub(r'-{10,}\n', '', values)
         return (
             '<div style="background:#fffbe6;border:2px solid #fbc02d;'
-            'padding:18px 18px 18px 18px;margin:24px 0 24px 0;'
-            'font-size:1.13em;font-weight:bold;color:#333;box-shadow:0 2px 8px #fbc02d55;">'
-            + match.group(1) +
-            '</div>'
+            'padding:12px 8px 12px 8px;margin:18px 0 18px 0;'
+            'font-size:0.93em;color:#333;box-shadow:0 2px 8px #fbc02d55;">'
+            '<div style="font-family:monospace;white-space:pre;font-size:0.93em;">'
+            + header + '\n\n' + trennlinie + '\n\n' + values +
+            '</div></div>'
         )
     return re.sub(pattern, repl, html, flags=re.IGNORECASE)
 
@@ -110,7 +128,7 @@ def main():
         html_blocks.append(html_run_header(run_counter, total_runs, hit_rate, "ohne Markov"))
         cmd = [
             sys.executable,
-            os.path.join(script_dir, "MyTradingSimulator_sub.py"),
+            os.path.join(script_dir, "dps_sub.py"),
             "--hit_rate", str(hit_rate),
             "--avg_win", str(args["avg_win"]),
             "--avg_loss", str(args["avg_loss"]),

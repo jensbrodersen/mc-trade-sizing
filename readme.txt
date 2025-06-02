@@ -9,7 +9,7 @@ Robustheit und das Risiko-Ertrags-Profil verschiedener Ansätze zu bewerten.
 Ablauf
 ------
 1. Starte das Skript mit:
-   python MyTradingSimulator_sub.py --hit_rate 0.7 --avg_win 100 --avg_loss 150
+   python dps_sub.py --hit_rate 0.7 --avg_win 100 --avg_loss 150
    (Passe die Parameter nach Bedarf an.)
 
 2. Das Skript führt für jede Strategie mehrere Monte-Carlo-Simulationen
@@ -64,7 +64,7 @@ ausgegeben.
 
 Beispielaufruf
 --------------
-python MyTradingSimulator_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
 
 Standardmäßig wird jede Strategie mit 1000 Monte-Carlo-Simulationen getestet,
 d.h. die Reihenfolge der Trades wird pro Strategie 1000-mal zufällig
