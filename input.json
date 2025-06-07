@@ -1,6 +1,6 @@
 {
-  "_comment_1": "Fuer jedes System zum Testen neu eingeben",
-  "_comment_2": "=========================================",
+  "_comment_1": "Re-enter for each system to be tested",
+  "_comment_2": "=====================================",
   "hit_rate": 0.82,
   "avg_win": 186,
   "avg_loss": 219,
@@ -19,7 +19,7 @@
   "p_win_wl": 0.6,
   "p_win_lw": 0.5,
   "p_win_ll": 0.3,
-  "_comment_9": "Regime-Switching",
+  "_comment_9": "Regime Switching",
   "_comment_10": "===============",
   "regimes": [
     {"length": 300, "hit_rate": 0.9, "avg_win": 200, "avg_loss": 100},

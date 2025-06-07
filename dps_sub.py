@@ -245,10 +245,13 @@ def make_condition_func(strategy_id):
             if state.get('mode', 'trading') == 'trading':
                 if result > 0:
                     state['mode'] = 'pause'
+                size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
-            size = 1
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 10: Nach 2 Gewinnen pausieren bis zum nächsten Verlust
         elif strategy_id == 10:
@@ -259,11 +262,14 @@ def make_condition_func(strategy_id):
                         state['mode'] = 'pause'
                 else:
                     state['win_streak'] = 0
+                size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
                     state['win_streak'] = 0
-            size = 1
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 11: Nach 3 Gewinnen pausieren bis zum nächsten Verlust
         elif strategy_id == 11:
@@ -274,11 +280,14 @@ def make_condition_func(strategy_id):
                         state['mode'] = 'pause'
                 else:
                     state['win_streak'] = 0
+                size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
                     state['win_streak'] = 0
-            size = 1
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 12: Nach 4 Gewinnen pausieren bis zum nächsten Verlust
         elif strategy_id == 12:
@@ -289,11 +298,14 @@ def make_condition_func(strategy_id):
                         state['mode'] = 'pause'
                 else:
                     state['win_streak'] = 0
+                size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
                     state['win_streak'] = 0
-            size = 1
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 13: Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1
         elif strategy_id == 13:
@@ -321,13 +333,18 @@ def make_condition_func(strategy_id):
                     if state['win_streak'] >= 2:
                         state['mode'] = 'pause'
                         size = 2
+                    else:
+                        size = 1
                 else:
                     state['win_streak'] = 0
+                    size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
                     state['win_streak'] = 0
-            # size bleibt wie oben gesetzt
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 16: Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust
         elif strategy_id == 16:
@@ -339,10 +356,14 @@ def make_condition_func(strategy_id):
                     state['loss_streak'] += 1
                     if state['loss_streak'] >= 2:
                         size = 2
+                    else:
+                        size = 1
             elif state.get('mode') == 'pause':
                 if result <= 0:
                     state['mode'] = 'trading'
-            # size bleibt wie oben gesetzt
+                    size = 1
+                else:
+                    size = 0  # Pause: keine Position
 
         # 17: Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1
         elif strategy_id == 17:
@@ -444,6 +465,14 @@ def run_all_strategies(
                 else:
                     cond_func = make_condition_func(i)
                     profit, dd = strategy_dynamic(base_results, cond_func)
+
+                try:
+                    profit = float(profit)
+                    dd = float(dd)
+                except Exception as e:
+                    print(f"Fehler beim Parsen von profit/dd für Strategie {i}: {profit}, {dd}")
+                    raise
+
                 summary[i].append((profit, dd))
 
     summary_final = []
@@ -464,7 +493,7 @@ def run_all_strategies(
     positive = [row for row in summary_final if row[9] >= 0]
     negative = [row for row in summary_final if row[9] < 0]
     positive.sort(key=lambda x: x[9], reverse=True)
-    negative.sort(key=lambda x: x[9])
+    negative.sort(key=lambda x: x[9], reverse=True)
     summary_final = positive + negative
 
     return summary_final

@@ -177,5 +177,3 @@ Mit Markov- und Regime-Switching-Modellen werden die Simulationen deutlich
 realistischer. Sie helfen, Strategien auf ihre Robustheit gegenüber echten
 Marktbedingungen zu testen und Schwächen in bestimmten Phasen frühzeitig zu
 erkennen.
-
-Weitere Optionen siehe --help.

@@ -198,8 +198,13 @@ def main():
     # Nach Run-Nummer sortieren
     html_tables.sort(key=lambda x: x[0])
 
-    # HTML-Datei vorbereiten
-    html_output_path = os.path.join(script_dir, "simulation_runs.html")
+    # Ordner "results" erstellen, falls nicht vorhanden
+    results_dir = os.path.join(script_dir, "results")
+    os.makedirs(results_dir, exist_ok=True)
+
+    # HTML-Datei im Unterordner results speichern
+    html_output_path = os.path.join(results_dir, "simulation_runs.html")
+
     with open(html_output_path, "w", encoding="utf-8") as html_file:
         html_file.write(
             "<html><head><meta charset='utf-8'>"
@@ -212,7 +217,6 @@ def main():
         )
         html_file.write("<h2>Simulation Runs Übersicht</h2>\n")
         for block, (idx, table_html) in zip(html_blocks, html_tables):
-            # Top-4-Abschnitt hervorheben, falls enthalten
             if "Top 4 Strategien im Vergleich zu" in table_html:
                 table_html = highlight_top4_section(table_html)
             html_file.write(block + "\n")
@@ -220,6 +224,7 @@ def main():
         html_file.write("</body></html>\n")
 
     print(f"\nHTML-Übersicht der Runs wurde erzeugt: {html_output_path}")
+
 
 if __name__ == "__main__":
     main()
