@@ -1,44 +1,36 @@
 # ------------------------------------------------------------------------------------------
-# Trading-Strategie-Simulator mit Monte-Carlo-Analyse und adaptiver Positionsgrößensteuerung
+# Trading Strategy Simulator with Monte Carlo Analysis and Adaptive Position Sizing
 #
-# Übersicht:
-# Dieses Skript simuliert 20 verschiedene Trading-Strategien, bei denen die Positionsgröße
-# dynamisch an Gewinn- oder Verlustserien angepasst wird. Es werden klassische Martingale-,
-# Anti-Martingale-Ansätze sowie Strategien mit Pausenphasen nach Gewinnserien getestet.
+# Overview:
+# This script simulates 20 different trading strategies with dynamically adjusted
+# position sizing based on win/loss streaks. It evaluates classic Martingale and
+# Anti-Martingale approaches, and strategies that pause trading after certain conditions.
 #
-# Funktionsweise:
-# - Für gegebene Trefferquote, durchschnittlichen Gewinn und Verlust sowie Trade-Anzahl
-#   werden zufällige Trade-Serien erzeugt (Monte-Carlo-Prinzip).
-# - Optional kann ein Markov-Modell (1. oder 2. Ordnung) oder ein Regime-Switching-Modell aktiviert werden.
-# - Für jede Strategie wird die Entwicklung des Kapitals und der maximale Drawdown
-#   simuliert und ausgewertet.
-# - Die Positionsgröße wird je nach Strategie nach bestimmten Regeln erhöht, reduziert
-#   oder pausiert (z.B. nach x Gewinnen/Verlusten).
+# Functionality:
+# - Generates random trade sequences (Monte Carlo method) based on:
+#   hit rate, average win, average loss, and total number of trades.
+# - Optional: Enables a 1st or 2nd order Markov model or regime-switching model.
+# - Simulates capital progression and max drawdown for each strategy.
+# - Position size is adapted after wins/losses or paused depending on strategy rules.
 #
-# Output und Bewertung:
-# - Für jede Strategie werden folgende Kennzahlen berechnet:
-#   * Ø Gewinn (€): Durchschnittlicher Gesamtgewinn über alle Simulationen.
-#   * Ø Drawdown (€): Durchschnittlicher maximaler Kapitalrückgang.
-#   * Verhältnis: Verhältnis von Ø Gewinn zu Ø Drawdown (Chance-Risiko).
-#   * Min/Max (€): Minimaler und maximaler Gesamtgewinn.
-#   * Min DD/Max DD (€): Minimaler und maximaler Drawdown.
-#   * Ø/Trade: Durchschnittlicher Gewinn pro Trade.
-#   * Gewinn/MaxDD: Verhältnis von Ø Gewinn zu maximalem Drawdown.
-# - Die Strategien werden nach Gewinn/MaxDD absteigend sortiert, um die profitabelsten
-#   Varianten hervorzuheben.
+# Output & Evaluation:
+# - Each strategy outputs:
+#   * Avg. Profit (€): Average total return over all simulations.
+#   * Avg. Drawdown (€): Average of maximum drawdowns.
+#   * Ratio: Avg. profit divided by avg. drawdown (risk/reward).
+#   * Min/Max (€): Minimum and maximum profits observed.
+#   * Min DD / Max DD (€): Minimum and maximum drawdowns observed.
+#   * Avg/Trade (€): Average profit per trade.
+#   * Profit/MaxDD: Ratio of average profit to max drawdown.
+# - Strategies are sorted by Profit/MaxDD (descending).
 #
-# Bewertung:
-# Die Auswertung zeigt, wie sich verschiedene Anpassungen der Positionsgröße auf
-# Gewinn, Risiko und Robustheit auswirken. Besonders Strategien mit Pausen oder
-# gezielter Erhöhung nach Verlusten können das Chance-Risiko-Profil verbessern,
-# bergen aber auch Risiken bei langen Verlustserien.
-#
-# Nutzung:
-# Das Skript wird über die Kommandozeile gestartet. Beispielaufruf:
-#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
-#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov --p_win_after_win 0.8 --p_win_after_loss 0.4
-#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_markov2 --p_win_ww 0.8 --p_win_wl 0.6 --p_win_lw 0.5 --p_win_ll 0.3
-#   python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506 --use_regime --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},{"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},{"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'
+# Insights:
+# - Shows how position sizing rules affect profitability, risk, and robustness.
+# - Pausing after winning streaks or adjusting after losses can improve risk/reward.
+# - Some strategies perform better under different market regimes or streak types.
+##
+# License:
+# MIT License. Provided for educational purposes. No financial advice.
 # ------------------------------------------------------------------------------------------
 
 import numpy as np
@@ -418,26 +410,26 @@ def run_all_strategies(
     use_regime=False, regimes=None
 ):
     descriptions = {
-        1: "Konstante Positionsgröße 1",
-        2: "Nach Gewinn auf 2 erhöhen, nach Verlust zurück auf 1",
-        3: "Nach Gewinn auf 2 erhöhen, nach Verlust oder 2 Gewinnen zurück auf 1",
-        4: "Nach Gewinn auf 2 erhöhen, nach Verlust oder 3 Gewinnen zurück auf 1",
-        5: "Nach Gewinn auf 2 erhöhen, nach Verlust oder 4 Gewinnen zurück auf 1",
-        6: "Nach Verlust auf 2 erhöhen, nach Gewinn zurück auf 1",
-        7: "Nach 2 Verlusten auf 2 erhöhen, nach Gewinn zurück auf 1",
-        8: "Nach 3 Verlusten auf 2 erhöhen, nach Gewinn zurück auf 1",
-        9: "Nach 1 Gewinn pausieren bis zum nächsten Verlust",
-        10: "Nach 2 Gewinnen pausieren bis zum nächsten Verlust",
-        11: "Nach 3 Gewinnen pausieren bis zum nächsten Verlust",
-        12: "Nach 4 Gewinnen pausieren bis zum nächsten Verlust",
-        13: "Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten zurück auf 1",
-        14: "Nach 1 Gewinn und 1 Verlust auf 2 erhöhen, sonst auf 1",
-        15: "Nach 2 Gewinnen in Folge pausieren bis 1 Verlust, dann auf 2 erhöhen",
-        16: "Nach 2 Verlusten auf 2 erhöhen, nach 1 Gewinn pausieren bis zum nächsten Verlust",
-        17: "Nach 1 Gewinn auf 2 erhöhen, aber nur wenn davor 1 Verlust war, sonst auf 1",
-        18: "Nach 3 Gewinnen auf 3 erhöhen, nach 1 Verlust zurück auf 1",
-        19: "Nach 2 Gewinnen auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, sonst auf 1",
-        20: "Nach 1 Gewinn auf 2 erhöhen, nach 2 Verlusten auf 3 erhöhen, nach Gewinn zurück auf 1",
+        1: "Constant position size 1",
+        2: "Increase to 2 after win, reset to 1 after loss",
+        3: "Increase to 2 after win, reset to 1 after loss or 2 wins",
+        4: "Increase to 2 after win, reset to 1 after loss or 3 wins",
+        5: "Increase to 2 after win, reset to 1 after loss or 4 wins",
+        6: "Increase to 2 after loss, reset to 1 after win",
+        7: "Increase to 2 after 2 losses, reset to 1 after win",
+        8: "Increase to 2 after 3 losses, reset to 1 after win",
+        9: "Pause after 1 win until next loss",
+        10: "Pause after 2 wins until next loss",
+        11: "Pause after 3 wins until next loss",
+        12: "Pause after 4 wins until next loss",
+        13: "Increase to 2 after 2 wins, reset to 1 after 2 losses",
+        14: "Increase to 2 after 1 win and 1 loss, else 1",
+        15: "Pause after 2 consecutive wins until 1 loss, then increase to 2",
+        16: "Increase to 2 after 2 losses, pause after 1 win until next loss",
+        17: "Increase to 2 after 1 win only if preceded by 1 loss, else 1",
+        18: "Increase to 3 after 3 wins, reset to 1 after 1 loss",
+        19: "Increase to 2 after 2 wins, to 3 after 2 losses, else 1",
+        20: "Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win",
     }
 
     summary = {i: [] for i in range(1, 21)}
@@ -470,7 +462,7 @@ def run_all_strategies(
                     profit = float(profit)
                     dd = float(dd)
                 except Exception as e:
-                    print(f"Fehler beim Parsen von profit/dd für Strategie {i}: {profit}, {dd}")
+                    print(f"Error parsing profit/dd for strategy {i}: {profit}, {dd}")
                     raise
 
                 summary[i].append((profit, dd))
@@ -499,52 +491,50 @@ def run_all_strategies(
     return summary_final
 
 def main():
-    parser = argparse.ArgumentParser(description="Simuliere 20 Trading-Strategien mit/ohne Markov-Korrelationen, Markov 2. Ordnung und Regime-Switching")
-    parser.add_argument("--hit_rate", type=float, required=True, help="Trefferquote, z.B. 0.7")
-    parser.add_argument("--avg_win", type=float, required=True, help="Durchschnittlicher Gewinn pro Trade")
-    parser.add_argument("--avg_loss", type=float, required=True, help="Durchschnittlicher Verlust pro Trade")
-    parser.add_argument("--num_simulations", type=int, default=200, help="Anzahl der Simulationen (default: 200)")
-    parser.add_argument("--num_trades", type=int, default=400, help="Anzahl der Trades pro Simulation (default: 400)")
-    parser.add_argument("--num_mc_shuffles", type=int, default=200, help="Anzahl der Shuffles pro Simulation (default: 200)")
-    parser.add_argument("--use_markov", action="store_true", help="Korrelationen zwischen Trades (Markov-Kette, 1. Ordnung) verwenden")
-    parser.add_argument("--p_win_after_win", type=float, default=0.7, help="P(Gewinn|Gewinn) für Markov-Modell 1. Ordnung")
-    parser.add_argument("--p_win_after_loss", type=float, default=0.5, help="P(Gewinn|Verlust) für Markov-Modell 1. Ordnung")
-    parser.add_argument("--use_markov2", action="store_true", help="Markov-Modell 2. Ordnung verwenden")
-    parser.add_argument("--p_win_ww", type=float, default=0.8, help="P(Gewinn|Gewinn, Gewinn) für Markov 2. Ordnung")
-    parser.add_argument("--p_win_wl", type=float, default=0.6, help="P(Gewinn|Gewinn, Verlust) für Markov 2. Ordnung")
-    parser.add_argument("--p_win_lw", type=float, default=0.5, help="P(Gewinn|Verlust, Gewinn) für Markov 2. Ordnung")
-    parser.add_argument("--p_win_ll", type=float, default=0.3, help="P(Gewinn|Verlust, Verlust) für Markov 2. Ordnung")
-    parser.add_argument("--use_regime", action="store_true", help="Regime-Switching-Modell verwenden")
-    parser.add_argument("--regimes", type=str, default=None, help="Regime-Liste als JSON-String")
+    parser = argparse.ArgumentParser(description="Simulate 20 trading strategies with/without Markov correlations, second-order Markov, and regime switching")
+    parser.add_argument("--hit_rate", type=float, required=True, help="Hit rate, e.g. 0.7")
+    parser.add_argument("--avg_win", type=float, required=True, help="Average win per trade")
+    parser.add_argument("--avg_loss", type=float, required=True, help="Average loss per trade")
+    parser.add_argument("--num_simulations", type=int, default=200, help="Number of simulations (default: 200)")
+    parser.add_argument("--num_trades", type=int, default=400, help="Number of trades per simulation (default: 400)")
+    parser.add_argument("--num_mc_shuffles", type=int, default=200, help="Number of shuffles per simulation (default: 200)")
+    parser.add_argument("--use_markov", action="store_true", help="Use Markov chain correlations (1st order)")
+    parser.add_argument("--p_win_after_win", type=float, default=0.7, help="P(win|win) for 1st order Markov model")
+    parser.add_argument("--p_win_after_loss", type=float, default=0.5, help="P(win|loss) for 1st order Markov model")
+    parser.add_argument("--use_markov2", action="store_true", help="Use 2nd order Markov model")
+    parser.add_argument("--p_win_ww", type=float, default=0.8, help="P(win|win,win) for 2nd order Markov")
+    parser.add_argument("--p_win_wl", type=float, default=0.6, help="P(win|win,loss) for 2nd order Markov")
+    parser.add_argument("--p_win_lw", type=float, default=0.5, help="P(win|loss,win) for 2nd order Markov")
+    parser.add_argument("--p_win_ll", type=float, default=0.3, help="P(win|loss,loss) for 2nd order Markov")
+    parser.add_argument("--use_regime", action="store_true", help="Use regime switching model")
+    parser.add_argument("--regimes", type=str, default=None, help="Regime list as JSON string")
     args = parser.parse_args()
 
-    # --- Auffälliger Block für den aktuellen Fall ---
     print("\n" + "="*90)
-    print("AKTUELLER SIMULATIONSFALL:")
-    print(f"Trefferquote: {args.hit_rate:.2%}")
+    print("CURRENT SIMULATION SETTING:")
+    print(f"Hit rate: {args.hit_rate:.2%}")
     if args.use_regime:
-        print("Modus: Regime-Switching")
+        print("Mode: Regime Switching")
         if args.regimes:
             print(f"Regimes: {args.regimes}")
     elif args.use_markov2:
-        print("Modus: Markov 2. Ordnung")
-        print(f"P(Gewinn|GG): {args.p_win_ww}, P(Gewinn|GV): {args.p_win_wl}, P(Gewinn|VG): {args.p_win_lw}, P(Gewinn|VV): {args.p_win_ll}")
+        print("Mode: 2nd Order Markov")
+        print(f"P(win|WW): {args.p_win_ww}, P(win|WL): {args.p_win_wl}, P(win|LW): {args.p_win_lw}, P(win|LL): {args.p_win_ll}")
     elif args.use_markov:
-        print("Modus: Markov 1. Ordnung")
-        print(f"P(Gewinn|Gewinn): {args.p_win_after_win}, P(Gewinn|Verlust): {args.p_win_after_loss}")
+        print("Mode: 1st Order Markov")
+        print(f"P(win|win): {args.p_win_after_win}, P(win|loss): {args.p_win_after_loss}")
     else:
-        print("Modus: Ohne Markov")
+        print("Mode: No Markov")
     print("="*90 + "\n")
 
-    print(f"Durchschnittlicher Gewinn pro Trade: {args.avg_win} €")
-    print(f"Durchschnittlicher Verlust pro Trade: {args.avg_loss} €")
-    print(f"Anzahl der Simulationen: {args.num_simulations}")
-    print(f"Anzahl der Trades pro Simulation: {args.num_trades}")
-    print(f"Anzahl der Shuffles pro Simulation: {args.num_mc_shuffles}")
+    print(f"Average win per trade: €{args.avg_win}")
+    print(f"Average loss per trade: €{args.avg_loss}")
+    print(f"Number of simulations: {args.num_simulations}")
+    print(f"Number of trades per simulation: {args.num_trades}")
+    print(f"Number of shuffles per simulation: {args.num_mc_shuffles}")
     breakeven = find_break_even_hit_rate(args.avg_win, args.avg_loss)
-    print(f"Break-even-Trefferquote: {breakeven:.2%}")
+    print(f"Break-even hit rate: {breakeven:.2%}")
 
-    # Regimes ggf. als JSON laden
     regimes = pyjson.loads(args.regimes) if args.use_regime and args.regimes else None
 
     summary = run_all_strategies(
@@ -562,45 +552,41 @@ def main():
         regimes=regimes
     )
 
-    print("\nErgebnisse (Monte Carlo, basierend auf den Eingabewerten):\n")
+    print("\nResults (Monte Carlo, based on input parameters):\n")
     header = (
-        f"{'Strategie':<90} {'Ø Gewinn (€)':>14} {'Ø Drawdown (€)':>16} {'Verhältnis':>12} "
+        f"{'Strategy':<90} {'Avg Profit (€)':>14} {'Avg Drawdown (€)':>16} {'Ratio':>12} "
         f"{'Min (€)':>12} {'Max (€)':>12} {'Min DD (€)':>14} {'Max DD (€)':>14} "
-        f"{'Ø/Trade':>12} {'Gewinn/MaxDD':>18}"
+        f"{'Avg/Trade':>12} {'Profit/MaxDD':>18}"
     )
     print(header)
     print("=" * len(header))
 
-    # a) Leerzeile
     print()
 
-    # b) Modelltyp in gelber Schrift + Trefferquote (neues Format)
     try:
         from colorama import Fore, Style
         if args.use_regime:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Regime-Switching-Modell"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  Regime Switching Model"
         elif args.use_markov2:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 2. Ordnung"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  2nd Order Markov"
         elif args.use_markov:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 1. Ordnung"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  1st Order Markov"
         else:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Kein Markov"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  No Markov"
         print(Fore.YELLOW + f"*** {model_label} ***" + Style.RESET_ALL)
     except ImportError:
         if args.use_regime:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Regime-Switching-Modell"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  Regime Switching Model"
         elif args.use_markov2:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 2. Ordnung"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  2nd Order Markov"
         elif args.use_markov:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Markov 1. Ordnung"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  1st Order Markov"
         else:
-            model_label = f"Trefferquote: {int(round(args.hit_rate * 100))} %  -  Kein Markov"
+            model_label = f"Hit rate: {int(round(args.hit_rate * 100))}%  -  No Markov"
         print(f"*** {model_label} ***")
 
-    # c) Leerzeile
     print()
 
-    # d) Originale Ergebnistabelle
     for idx, (description, profit, dd, ratio, min_p, max_p, min_d, max_d, avg_per_trade, ratio_max_dd) in enumerate(summary):
         print(
             f"{description:<90} {profit:14.2f} {dd:16.2f} {ratio:12.2f} "
@@ -610,12 +596,11 @@ def main():
         if idx == 2:
             print("-" * len(header))
 
-    # Erweiterte Ausgabe: Beste 4 Strategien im Vergleich zu "Konstante Positionsgröße 1"
     try:
         from colorama import Fore, Style, init
         init(autoreset=True)
-        konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Konstante Positionsgröße 1")), None)
-        print("\n\n\nTop 4 Strategien im Vergleich zu 'Konstante Positionsgröße 1':")
+        konst_idx = next((i for i, row in enumerate(summary) if row[0].startswith("Constant position size 1")), None)
+        print("\n\n\nTop 4 strategies compared to 'Constant position size 1':")
         print("--------------------------------------------------------------")
         for idx in range(4):
             if idx >= len(summary):
