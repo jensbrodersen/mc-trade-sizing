@@ -4,6 +4,7 @@ import os
 import sys
 import concurrent.futures
 import threading
+from datetime import datetime
 
 def run_simulation(cmd):
     # Fange die Ausgabe ab (stdout)
@@ -202,8 +203,11 @@ def main():
     results_dir = os.path.join(script_dir, "results")
     os.makedirs(results_dir, exist_ok=True)
 
+    # Erzeuge Zeitstempel für Dateinamen
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
     # HTML-Datei im Unterordner results speichern
-    html_output_path = os.path.join(results_dir, "simulation_runs.html")
+    html_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.html")
 
     with open(html_output_path, "w", encoding="utf-8") as html_file:
         html_file.write(

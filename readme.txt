@@ -1,179 +1,202 @@
-dps.py (Dynamic Position Sizing Simulator) - Übersicht
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+
+
+dps.py (Dynamic Position Sizing Simulator) - Overview
 ======================================================
 
-Dieses Skript simuliert und vergleicht 20 verschiedene Positionsgrößen-
-Strategien für eine Serie von Trading-Trades mit festen Gewinn- und
-Verlustbeträgen und einer vorgegebenen Trefferquote. Ziel ist es, die
-Robustheit und das Risiko-Ertrags-Profil verschiedener Ansätze zu bewerten.
+This script simulates and compares 20 different position sizing strategies for a
+series of trading trades with fixed profit and loss amounts and a given hit rate.
+The goal is to evaluate the robustness and risk-return profile of various
+approaches.
 
-Ablauf
-------
-1. Starte das Skript mit:
-   python dps_sub.py --hit_rate 0.7 --avg_win 100 --avg_loss 150
-   (Passe die Parameter nach Bedarf an.)
+Process
+-------
 
-2. Das Skript führt für jede Strategie mehrere Monte-Carlo-Simulationen
-   und Shuffles durch, um die Robustheit zu testen.
+1. Configure the following parameters in `input.json`, which are derived from
+   backtesting the trading systems:
 
-3. Die wichtigsten Kennzahlen werden für jede Strategie berechnet und
-   übersichtlich ausgegeben.
+  "hit_rate": 0.82,    # Corresponds to a win rate of 82%  
+  "avg_win": 186,      # Corresponds to an average profit of 186 USD  
+  "avg_loss": 219,     # Corresponds to an average loss of 219 USD  
 
-Strategien
+  (Adjust the parameters for each system accordingly.)
+
+2. Run the script with:  
+   `python dps.py`
+
+3. The script performs multiple Monte Carlo simulations and shuffles for each
+   strategy to test robustness.
+
+4. Key metrics are calculated and clearly output for each strategy.
+
+Strategies
 ----------
-- Konstante Positionsgröße
-- Martingale- und Anti-Martingale-Ansätze
-- Streak-Strategien (nach Gewinn/Verlust erhöhen oder pausieren)
-- Pausen- und Kombinationsstrategien
 
-Ergebnisse
-----------
-Die Ausgabe enthält für jede Strategie:
-- Ø Gewinn (€)
-- Ø Drawdown (€)
-- Verhältnis Gewinn/Drawdown
-- Min/Max Gewinn und Drawdown
-- Ø Gewinn pro Trade
-- Gewinn/Maximaler Drawdown
+- Constant position sizing  
+- Martingale and anti-Martingale approaches  
+- Streak strategies (increase or pause after wins/losses)  
+- Pause and combination strategies  
 
-Die besten Strategien werden farblich hervorgehoben (grün für beste,
-rot für konstante Positionsgröße).
+Results
+-------
 
-Hinweise
---------
-- Trefferquote, Gewinn und Verlust sind konstant (keine Marktphasen).
-- Es werden keine Transaktionskosten oder Slippage berücksichtigt.
-- Die Strategien sind flexibel und können leicht erweitert werden.
-- Die Simulation eignet sich besonders zum Vergleich von
-  Positionsgrößen-Strategien unter identischen Bedingungen.
+The output includes for each strategy:  
+- Average profit (€)  
+- Average drawdown (€)  
+- Profit to drawdown ratio  
+- Min/max profit and drawdown  
+- Average profit per trade  
+- Profit / maximum drawdown  
 
-Monte-Carlo-Simulation
+Results are saved as an HTML report in the `/results` subfolder.
+
+Notes
+-----
+
+- Hit rate, profit, and loss are constant (no market phases).  
+- Since in practice every trading system performs worse than backtesting,  
+  three scenarios are always simulated:  
+  1. The system performs 10% worse consistently (for higher win rates)  
+  2. The system performs 5% worse consistently (for lower win rates)  
+  3. The theoretical backtest system without performance degradation.  
+- No transaction costs or slippage are considered.  
+- Strategies are flexible and can easily be extended.  
+- The simulation is particularly suitable for comparing position sizing  
+  strategies under identical conditions.
+
+Monte Carlo Simulation
 ----------------------
-Für jede Strategie werden mehrere Monte-Carlo-Simulationen durchgeführt.
-Dabei wird die Reihenfolge der Trades mehrfach zufällig durchmischt
-(Shuffling), um die Robustheit der Strategie gegenüber unterschiedlichen
-Trade-Abfolgen zu testen. So lassen sich auch seltene Pechsträhnen und
-Glücksserien realistisch abbilden.
 
-Beispiel: 
-Angenommen, du hast 100 Trades und stellst 1000 Monte-Carlo-Simulationen ein,
-dann werden insgesamt 1000 verschiedene, zufällig gemischte Handelsserien pro
-Strategie simuliert. Das ergibt bei 20 Strategien insgesamt 20.000
-Simulationsläufe. Die Ergebnisse werden statistisch ausgewertet und als
-Durchschnittswerte sowie Extremwerte (Minimum/Maximum) für jede Strategie
-ausgegeben.
+Multiple Monte Carlo simulations are performed for each strategy.  
+The order of trades is shuffled several times randomly to test the robustness
+of the strategy against different trade sequences. This realistically models
+rare losing streaks and winning runs.
 
-Beispielaufruf
---------------
-python dps_sub.py --hit_rate 0.81 --avg_win 307 --avg_loss 506
+Example:  
+If you have 100 trades and set 1000 Monte Carlo simulations,  
+then 1000 different randomly shuffled trade sequences per strategy are
+simulated.  
+With 20 strategies, that results in 20,000 simulation runs in total.  
+Results are statistically evaluated and reported as averages and extreme
+values (minimum/maximum) per strategy.
 
-Standardmäßig wird jede Strategie mit 1000 Monte-Carlo-Simulationen getestet,
-d.h. die Reihenfolge der Trades wird pro Strategie 1000-mal zufällig
-geshuffled. So werden insgesamt 20.000 Simulationsläufe (20 Strategien × 1000
-Shuffles) durchgeführt und ausgewertet.
+Example usage
+-------------
 
-Einbau von Gewinn- und Verlustserien
-------------------------------------
-Um die Simulation noch realistischer zu machen, können Gewinn- und
-Verlustserien (Streaks) eingebaut werden. Dabei werden die Trades nicht
-vollständig zufällig verteilt, sondern es werden gezielt Phasen mit mehreren
-Gewinnen oder Verlusten hintereinander erzeugt. So lassen sich typische
-Marktphasen wie Gewinnsträhnen oder Pechserien abbilden.
+`python dps.py`
 
-Eine Möglichkeit ist, die Trefferquote für bestimmte Abschnitte der
-Handelsserie temporär zu erhöhen oder zu senken, oder gezielt Blöcke von
-Gewinnen und Verlusten zu erzeugen. Dadurch werden Strategien auf ihre
-Robustheit gegenüber längeren Gewinn- oder Verlustphasen getestet.
+By default, each strategy is tested with 1000 Monte Carlo simulations,  
+meaning the trade order is shuffled 1000 times per strategy.  
+A total of 20,000 simulation runs (20 strategies × 1000 shuffles) are
+performed and analyzed.
 
-Beispiel:  
-Statt 100 Einzeltrades zufällig zu mischen, werden z.B. 10 Gewinnserien mit je
-5 Gewinnen und 10 Verlustserien mit je 5 Verlusten erzeugt und dann die
-Reihenfolge dieser Blöcke gemischt. Alternativ kann die Trefferquote für
-bestimmte Zeiträume auf z.B. 90% (Gewinnphase) oder 30% (Verlustphase)
-gesetzt werden.
-
-So lässt sich analysieren, wie die verschiedenen Positionsgrößen-Strategien
-auf längere Gewinn- oder Verlustserien reagieren und wie robust sie in
-schwierigen Marktphasen sind.
-
-Erweiterte Modelle für realistischere Simulationen
-==================================================
-
-Markov-Modelle (1. und 2. Ordnung)
+Incorporating Win and Loss Streaks
 ----------------------------------
-Was ist ein Markov-Modell?
-Ein Markov-Modell beschreibt, dass das Ergebnis eines Trades nicht völlig
-unabhängig vom vorherigen ist, sondern von der Historie beeinflusst wird. In
-der Praxis bedeutet das: Nach einem Gewinn ist die Wahrscheinlichkeit für
-einen weiteren Gewinn (oder Verlust) oft anders als nach einem Verlust. Das
-Modell kann so Gewinn- und Verlustserien (Streaks) realistischer abbilden.
 
-Markov 1. Ordnung:  
-Hier hängt die Gewinnwahrscheinlichkeit eines Trades nur vom Ergebnis des
-unmittelbar vorherigen Trades ab.
-- Beispiel: Nach einem Gewinn ist die Gewinnwahrscheinlichkeit z.B. 80%,
-  nach einem Verlust nur 40%.
-- Parameter:  
+To make the simulation even more realistic, win and loss streaks can be
+incorporated.  
+Trades are not shuffled completely randomly, but phases with multiple
+consecutive wins or losses are generated.  
+This models typical market phases such as winning streaks or losing runs.
+
+One way is to temporarily increase or decrease the hit rate for certain
+sections of the trading series or to specifically create blocks of wins and
+losses.  
+This tests the robustness of strategies against longer winning or losing
+phases.
+
+Example:  
+Instead of randomly shuffling 100 single trades,  
+10 winning streaks of 5 wins each and 10 losing streaks of 5 losses each can
+be generated,  
+and then the order of these blocks is shuffled.  
+Alternatively, the hit rate for certain periods can be set to, for example,
+90% (winning phase) or 30% (losing phase).
+
+This allows analyzing how different position sizing strategies react to longer
+win or loss streaks and how robust they are during difficult market phases.
+
+Advanced Models for More Realistic Simulations
+==============================================
+
+Markov Models (1st and 2nd Order)
+---------------------------------
+
+What is a Markov model?  
+A Markov model describes that the outcome of a trade is not completely
+independent of the previous one, but influenced by history.  
+In practice, this means that after a win, the probability of another win (or
+loss) is often different than after a loss.  
+This model can more realistically represent win and loss streaks.
+
+Markov 1st Order:  
+The win probability of a trade depends only on the result of the immediately
+preceding trade.  
+- Example: After a win, the win probability might be 80%, after a loss only 40%.  
+- Parameters:  
   --use_markov  
-  --p_win_after_win (z.B. 0.8)  
-  --p_win_after_loss (z.B. 0.4)  
+  --p_win_after_win (e.g. 0.8)  
+  --p_win_after_loss (e.g. 0.4)  
 
-Markov 2. Ordnung:  
-Hier hängt die Gewinnwahrscheinlichkeit eines Trades von den letzten ZWEI
-Ergebnissen ab.
-- Beispiel: Nach zwei Gewinnen in Folge ist die Wahrscheinlichkeit für einen
-  weiteren Gewinn z.B. 85%, nach Gewinn+Verlust vielleicht 60%, usw.
-- Parameter:  
+Markov 2nd Order:  
+The win probability depends on the last TWO trade results.  
+- Example: After two wins in a row, the probability of another win might be 85%,
+  after win+loss 60%, etc.  
+- Parameters:  
   --use_markov2  
-  --p_win_ww (nach zwei Gewinnen)  
-  --p_win_wl (nach Gewinn, dann Verlust)  
-  --p_win_lw (nach Verlust, dann Gewinn)  
-  --p_win_ll (nach zwei Verlusten)  
+  --p_win_ww (after two wins)  
+  --p_win_wl (win then loss)  
+  --p_win_lw (loss then win)  
+  --p_win_ll (after two losses)  
 
-Warum ist das sinnvoll?  
-In echten Märkten treten oft Phasen auf, in denen Gewinne oder Verluste
-gehäuft auftreten (Streaks, Clustering). Einfache Zufallsmodelle
-unterschätzen diese Effekte. Mit Markov-Modellen werden solche Phasen
-realistisch simuliert, was die Robustheit und das Risiko von Strategien
-besser testet.
+Why is this useful?  
+In real markets, phases occur where wins or losses cluster (streaks,
+clustering).  
+Simple random models underestimate these effects.  
+Markov models simulate these phases realistically, which better tests
+strategy robustness and risk.
 
-Regime-Switching-Modell
------------------------
-Was ist ein Regime-Switching-Modell?
-Hier wird die Handelsserie in verschiedene Marktphasen ("Regimes")
-unterteilt, z.B. Bullenmarkt, Seitwärtsphase, Crash. Jede Phase hat eigene
-Parameter für Trefferquote, Gewinn und Verlust. Die Länge und Reihenfolge
-der Phasen kann frei gewählt werden.
+Regime-Switching Model
+----------------------
 
-Beispiel:  
-1. 300 Trades mit hoher Trefferquote (z.B. 90%) und hohem Gewinn  
-2. 200 Trades mit neutralen Parametern  
-3. 500 Trades mit niedriger Trefferquote (z.B. 20%) und hohem Verlust  
+What is a regime-switching model?  
+Here the trading series is divided into different market phases ("regimes")  
+e.g. bull market, sideways phase, crash. Each phase has its own parameters
+for hit rate, profit, and loss.  
+The length and order of phases can be freely chosen.
 
-Parameter:  
+Example:  
+1. 300 trades with high hit rate (e.g. 90%) and high profit  
+2. 200 trades with neutral parameters  
+3. 500 trades with low hit rate (e.g. 20%) and high loss  
+
+Parameters:  
   --use_regime  
-  --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},
-              {"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},
-              {"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'
+  --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},  
+              {"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},  
+              {"length":500,"hit_rate":0.2,"avg_win":100,"avg_loss":200}]'  
 
-Warum ist das sinnvoll?  
-Finanzmärkte wechseln zwischen verschiedenen Zuständen (Trends,
-Seitwärtsphasen, Krisen). Strategien, die in einem Regime funktionieren,
-können im nächsten scheitern. Mit Regime-Switching lässt sich testen, wie
-robust eine Strategie über verschiedene Marktphasen hinweg ist. Das macht
-die Simulation deutlich praxisnäher und zeigt, wie Strategien auf
-schwierige Marktbedingungen reagieren.
+Why is this useful?  
+Financial markets switch between different states (trends, sideways phases,
+crises).  
+Strategies that work in one regime may fail in another.  
+Regime-switching allows testing how robust a strategy is across market phases.  
+This makes simulations much more realistic and shows how strategies react to
+difficult conditions.
 
-Vergleich der Modelle
----------------------
-- Zufallsmodell: Jeder Trade ist unabhängig, keine Streaks, keine
-  Marktphasen.
-- Markov 1./2. Ordnung: Abhängigkeit von 1 oder 2 vorherigen Trades,
-  realistische Gewinn-/Verlustserien.
-- Regime-Switching: Explizite Marktphasen mit eigenen Parametern,
-  simuliert z.B. Bullenmarkt, Crash, Seitwärtsphase.
+Model Comparison
+----------------
 
-Fazit:  
-Mit Markov- und Regime-Switching-Modellen werden die Simulationen deutlich
-realistischer. Sie helfen, Strategien auf ihre Robustheit gegenüber echten
-Marktbedingungen zu testen und Schwächen in bestimmten Phasen frühzeitig zu
-erkennen.
+- Random model: Each trade is independent, no streaks, no market phases.  
+- Markov 1st/2nd order: Dependency on 1 or 2 previous trades, realistic
+  win/loss streaks.  
+- Regime-switching: Explicit market phases with individual parameters,
+  simulates e.g. bull market, crash, sideways phase.
+
+Summary:  
+Markov and regime-switching models make simulations much more realistic.  
+They help test strategy robustness against real market conditions and identify
+weaknesses early.
