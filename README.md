@@ -126,14 +126,18 @@ python dps.py
   - Backtest model
   - 5% worse
   - 10% worse
-- No transaction costs or slippage included  
+- No transaction costs or slippage included
 - Fully extendable architecture  
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under a custom non-commercial license.
+Personal, educational, and non-commercial use is permitted free of charge.
+
+**Commercial use requires a separate paid license.**
+See the [LICENSE](./LICENSE) file for details and contact information.
 
 ---
 

@@ -28,9 +28,12 @@
 # - Shows how position sizing rules affect profitability, risk, and robustness.
 # - Pausing after winning streaks or adjusting after losses can improve risk/reward.
 # - Some strategies perform better under different market regimes or streak types.
-##
+#
 # License:
-# MIT License. Provided for educational purposes. No financial advice.
+# Provided free of charge for personal, educational, and non-commercial use only.
+# Commercial use requires a separate paid license.
+# See LICENSE file or contact: https://github.com/jensbrodersen
+# No financial advice.
 # ------------------------------------------------------------------------------------------
 
 import numpy as np
