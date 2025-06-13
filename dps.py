@@ -303,6 +303,7 @@ def main():
     # Generate timestamp for the filename
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     csv_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.csv")
+    excel_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.xlsx")
     
     csv_data = []
     
@@ -354,7 +355,12 @@ def main():
     df = pd.DataFrame(unique_csv_data)
     df.to_csv(csv_output_path, index=False, sep=";", encoding="utf-8-sig")
     
-    print(f"\n✅ CSV file successfully created: {csv_output_path}\n")
+    print(f"\n✅ CSV file successfully created: {csv_output_path}")
+
+    # Create DataFrame and write to XLSX
+    df.to_excel(excel_output_path, index=False, engine="openpyxl")
+    print(f"\n✅ Excel file successfully created: {excel_output_path}")
+
     
 if __name__ == "__main__":
     main()  # Calls main() to execute the script

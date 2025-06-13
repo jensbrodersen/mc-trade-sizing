@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import re
+import openpyxl  # (.xlsx)
 
 def save_html(html_tables, html_blocks, results_dir, timestamp):
     """Speichert die Simulationsergebnisse als HTML-Datei mit korrekter Formatierung."""
@@ -18,7 +19,6 @@ def save_html(html_tables, html_blocks, results_dir, timestamp):
         html_file.write("</body></html>\n")
 
     print(f"\n✅ HTML-Datei erfolgreich erstellt: {html_output_path}")
-
 
 def print_console(html_tables):
     """Zeigt die Simulationsergebnisse in der Konsole an."""
@@ -48,4 +48,24 @@ def save_csv(csv_data, results_dir, timestamp):
     df.to_csv(csv_output_path, index=False, sep=";", encoding="utf-8-sig")
 
     print(f"\n✅ CSV-Datei erfolgreich erstellt: {csv_output_path}")
+
+def save_excel(csv_data, results_dir, timestamp):
+    """Speichert die Simulationsergebnisse als Excel-Datei."""
+    excel_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.xlsx")
+
+    # Entferne doppelte Einträge
+    unique_csv_data = []
+    seen_strategies = set()
+
+    for entry in csv_data:
+        strategy_key = (entry["Run Index"], entry["Strategy"])
+        if strategy_key not in seen_strategies:
+            seen_strategies.add(strategy_key)
+            unique_csv_data.append(entry)
+
+    # Schreibe Excel-Datei mit richtiger Spaltenreihenfolge
+    df = pd.DataFrame(unique_csv_data)
+    df.to_excel(excel_output_path, index=False, engine="openpyxl")
+
+    print(f"\n✅ Excel-Datei erfolgreich erstellt: {excel_output_path}")
 
