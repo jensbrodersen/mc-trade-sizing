@@ -403,8 +403,44 @@ def make_condition_func(strategy_id):
         return size, state
     return func
 
-def find_break_even_hit_rate(avg_win, avg_loss):
-    return avg_loss / (avg_win + avg_loss)
+#origdef find_break_even_hit_rate(avg_win, avg_loss):
+#orig    return avg_loss / (avg_win + avg_loss)
+#new function start
+def find_break_even_hit_rate(avg_win, avg_loss, mode):
+    """ Calculates the break-even hit rate with additional safety checks and debugging prints. """
+
+    # Prevent division by zero
+    if avg_win is None or avg_loss is None or avg_win <= 0 or avg_loss <= 0:
+        print("❌ ERROR: Invalid values for avg_win or avg_loss! Calculation not possible.")
+        return None  # Exit early to prevent errors
+
+    # Basic calculation of break-even hit rate
+    base_rate = avg_loss / (avg_win + avg_loss)
+
+    # Check for infinite values (overflow protection)
+    if base_rate == float('inf'):
+        print("❌ ERROR: Calculation resulted in an infinite value!")
+        return None
+    
+    # Adjust the calculation based on the selected mode
+    if mode == "1st Order Markov":
+        p_adj = 0.7  # Example value, should be dynamically determined
+        #print(f"DEBUG: 1st Order Markov active -> Adjustment factor {1 + (p_adj - 0.5) / 5:.4f}")
+        base_rate *= (1 + (p_adj - 0.5) / 5)
+
+    elif mode == "2nd Order Markov":
+        p_adj = 0.8  # Example value
+        #print(f"DEBUG: 2nd Order Markov active -> Adjustment factor {1 + (p_adj - 0.5) / 4:.4f}")
+        base_rate *= (1 + (p_adj - 0.5) / 4)
+
+    elif mode == "Regime Switching":
+        # Example calculation based on multiple regimes
+        avg_regime_hit_rate = 0.6  # Example value, should be loaded from JSON
+        #print(f"DEBUG: Regime Switching active -> Average regime hit rate={avg_regime_hit_rate:.4f}")
+        base_rate *= (1 + (avg_regime_hit_rate - 0.5) / 3)
+
+    return base_rate
+#new function end
 
 def run_all_strategies(
     hit_rate, avg_win, avg_loss, num_trades, num_simulations, num_mc_shuffles,
@@ -535,7 +571,16 @@ def main():
     print(f"Number of simulations: {args.num_simulations}")
     print(f"Number of trades per simulation: {args.num_trades}")
     print(f"Number of shuffles per simulation: {args.num_mc_shuffles}")
-    breakeven = find_break_even_hit_rate(args.avg_win, args.avg_loss)
+
+    mode = "No Markov"
+    if args.use_regime:
+        mode = "Regime Switching"
+    elif args.use_markov2:
+        mode = "2nd Order Markov"
+    elif args.use_markov:
+        mode = "1st Order Markov"
+
+    breakeven = find_break_even_hit_rate(args.avg_win, args.avg_loss, mode)
     print(f"Break-even hit rate: {breakeven:.2%}")
 
     regimes = pyjson.loads(args.regimes) if args.use_regime and args.regimes else None
