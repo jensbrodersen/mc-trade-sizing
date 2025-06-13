@@ -43,6 +43,8 @@ import sys
 import concurrent.futures
 import threading
 from datetime import datetime
+import pandas as pd
+import re
 
 def run_simulation(cmd):
     # Capture output (stdout)
@@ -110,6 +112,30 @@ def highlight_top4_section(html):
             '</div></div>'
         )
     return re.sub(pattern, repl, html, flags=re.IGNORECASE)
+
+import re
+
+def extract_simulation_settings(table_text):
+    """Extracts simulation parameters from HTML text and returns them as a dictionary."""
+    hit_rate_match = re.search(r"Hit rate: ([\d.]+)%", table_text)
+    mode_match = re.search(r"Mode: (.*?)\n", table_text)
+    avg_win_match = re.search(r"Average win per trade: €([\d.]+)", table_text)
+    avg_loss_match = re.search(r"Average loss per trade: €([\d.]+)", table_text)
+    num_simulations_match = re.search(r"Number of simulations: (\d+)", table_text)
+    num_trades_match = re.search(r"Number of trades per simulation: (\d+)", table_text)
+    num_shuffles_match = re.search(r"Number of shuffles per simulation: (\d+)", table_text)
+    break_even_match = re.search(r"Break-even hit rate: ([\d.]+)%", table_text)
+
+    return {
+        "Hit Rate (%)": hit_rate_match.group(1) if hit_rate_match else None,
+        "Mode": mode_match.group(1).strip() if mode_match else None,
+        "Avg Win (€)": float(avg_win_match.group(1)) if avg_win_match else None,
+        "Avg Loss (€)": float(avg_loss_match.group(1)) if avg_loss_match else None,
+        "Num Simulations": int(num_simulations_match.group(1)) if num_simulations_match else None,
+        "Num Trades": int(num_trades_match.group(1)) if num_trades_match else None,
+        "Num Shuffles": int(num_shuffles_match.group(1)) if num_shuffles_match else None,
+        "Break-even Hit Rate (%)": break_even_match.group(1) if break_even_match else None
+    }
 
 def main():
     # Load configuration file
@@ -228,7 +254,7 @@ def main():
 
     # Sort by run number
     html_tables.sort(key=lambda x: x[0])
-
+      
     # Create "results" folder if it doesn't exist
     results_dir = os.path.join(script_dir, "results")
     os.makedirs(results_dir, exist_ok=True)
@@ -238,7 +264,7 @@ def main():
 
     # Save HTML to results subfolder
     html_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.html")
-
+    
     with open(html_output_path, "w", encoding="utf-8") as html_file:
         html_file.write(
             "<html><head><meta charset='utf-8'>"
@@ -256,9 +282,80 @@ def main():
             html_file.write(block + "\n")
             html_file.write(table_html + "\n")
         html_file.write("</body></html>\n")
+    
+    # Extract simulation settings from HTML content before processing individual strategies
+    # Iterate through all simulations
+    for idx, table_html in html_tables:
+        table_text = re.sub(r"<.*?>", "", table_html)  # Remove HTML tags for clean processing
 
-    print(f"\nHTML overview of the runs has been generated: {html_output_path}")
+        # Extract simulation settings using the cleaned text
+        simulation_settings = extract_simulation_settings(table_text)
+    
+    # Print all simulation results to console with cleaned HTML
+    for idx, table_html in html_tables:
+        clean_text = re.sub(r"<.*?>", "", table_html)  # Remove HTML tags for better readability in console output
+        print(f"\n🔹 Simulation Run {idx} Results:")
+        print(clean_text)
+    
+    print("\n✅ Simulation results successfully displayed in the console.")
+    print(f"\n✅ HTML overview of the runs has been generated: {html_output_path}")
+    
+    # Generate timestamp for the filename
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    csv_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.csv")
+    
+    csv_data = []
+    
+    # Iterate through all simulations
+    for idx, table_html in html_tables:
+        table_text = re.sub(r"<.*?>", "", table_html)  # Remove HTML tags for clean processing
+    
+        # Extract simulation settings before processing strategies
+        simulation_settings = extract_simulation_settings(table_text)  
+    
+        # ✅ Define `filtered_lines` BEFORE using it
+        filtered_lines = [
+            line for line in table_text.split("\n") 
+            if len(line.split()) >= 10 and "Top 4 strategies compared to" not in line
+        ]
+    
+        # Process each strategy line
+        for line in filtered_lines:
+            match = re.match(r"(.+?)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)", line)
+    
+            if match:
+                strategy_data = {
+                    "Run Index": idx,
+                    **simulation_settings,  # Ensures settings apply correctly per run
+                    "Strategy": match.group(1).strip(),
+                    "Avg Profit (€)": float(match.group(2)),
+                    "Avg Drawdown (€)": float(match.group(3)),
+                    "Ratio": float(match.group(4)),
+                    "Min (€)": float(match.group(5)),
+                    "Max (€)": float(match.group(6)),
+                    "Min DD (€)": float(match.group(7)),
+                    "Max DD (€)": float(match.group(8)),
+                    "Avg/Trade": float(match.group(9)),
+                    "Profit/MaxDD": float(match.group(10)),
+                }
+                csv_data.append(strategy_data)
 
-
+    # Remove duplicate strategy entries
+    unique_csv_data = []
+    seen_strategies = set()
+    
+    for entry in csv_data:
+        strategy_key = (entry["Run Index"], entry["Strategy"])
+        if strategy_key not in seen_strategies:
+            seen_strategies.add(strategy_key)
+            unique_csv_data.append(entry)
+    
+    # Create DataFrame and write to CSV
+    df = pd.DataFrame(unique_csv_data)
+    df.to_csv(csv_output_path, index=False, sep=";", encoding="utf-8-sig")
+    
+    print(f"\n✅ CSV file successfully created: {csv_output_path}\n")
+    
 if __name__ == "__main__":
-    main()
+    main()  # Calls main() to execute the script
+

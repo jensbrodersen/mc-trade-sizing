@@ -1,0 +1,744 @@
+<html><head><meta charset='utf-8'><title>Simulation Runs</title><style>body { font-size: 1.18em; font-family: Arial, sans-serif; background: #f7f7fa; }h2 { font-size: 1.7em; color: #222; margin-top: 1.2em; }div[style*='font-family:monospace'] { font-size: 1.13em; }</style></head><body>
+<h2>Simulation Runs Overview</h2>
+<div style="background:#2196F3;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 1/12: hit_rate = 0.72 (without Markov) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 72.00%<br>
+Mode: No Markov<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 72%  -  No Markov ***</span><br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              7433.33         -1642.74         4.52       141.60     13190.70       -4908.00        -459.90        74.33              16.16<br>
+Increase to 2 after win, reset to 1 after loss                                                   10671.71         -1689.66         6.32       364.80     21504.90       -4360.80        -700.80       106.72              15.23<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            10671.71         -1689.66         6.32       364.80     21504.90       -4360.80        -700.80       106.72              15.23<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          10438.96         -1915.52         5.45      -199.20     21373.80       -5376.30        -693.30       104.39              15.06<br>
+Pause after 3 wins until next loss                                                                3279.57          -819.01         4.00      -495.90      7063.80       -3253.50        -219.00        32.80              14.98<br>
+Pause after 4 wins until next loss                                                                3279.57          -819.01         4.00      -495.90      7063.80       -3253.50        -219.00        32.80              14.98<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                6859.26         -1287.13         5.33       441.00     12242.10       -3870.60        -459.90        68.59              14.91<br>
+Constant position size 1                                                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+Increase to 2 after loss, reset to 1 after win                                                    8122.68         -1593.05         5.10      -481.50     13626.90       -5051.10        -657.00        81.23              12.36<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                8122.68         -1593.05         5.10      -481.50     13626.90       -5051.10        -657.00        81.23              12.36<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              12296.45         -2027.47         6.06     -1657.20     28872.30       -4863.90       -1007.70       122.96              12.20<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2492.87         -1037.08         2.40     -1510.80      5195.40       -3761.40        -219.00        24.93              11.38<br>
+Pause after 1 win until next loss                                                                 1898.68          -685.64         2.77     -1099.80      4355.10       -2286.30        -219.00        18.99               8.67<br>
+Pause after 2 wins until next loss                                                                1898.68          -685.64         2.77     -1099.80      4355.10       -2286.30        -219.00        18.99               8.67<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1898.68          -685.64         2.77     -1099.80      4355.10       -2286.30        -219.00        18.99               8.67<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Constant position size 1                                                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Constant position size 1                                                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Constant position size 1                                                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      7666.08         -1368.54         5.60       834.90     13711.50       -3815.70        -471.00        76.66              16.28<br>
+Constant position size 1                                                                          6285.19         -1006.93         6.24       740.40     11293.50       -2833.20        -459.90        62.85              13.67<br>
+</div>
+<div style="background:#4CAF50;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 2/12: hit_rate = 0.72 (with Markov 1.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 72.00%<br>
+Mode: 1st Order Markov<br>
+P(win|win): 0.8, P(win|loss): 0.4<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 72%  -  1st Order Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+Pause after 2 wins until next loss                                                                1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2085.52         -1229.89         1.70     -8502.00      5130.00       -8841.00           0.00        20.86                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                    6628.49         -1876.21         3.53    -10707.00     15315.00      -11079.00        -219.00        66.28              30.27<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                6628.49         -1876.21         3.53    -10707.00     15315.00      -11079.00        -219.00        66.28              30.27<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              6030.10         -1929.15         3.13    -11847.00     13641.00      -12480.00        -252.00        60.30              23.93<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                5554.59         -1510.22         3.68     -8571.00     13083.00       -8964.00        -252.00        55.55              22.04<br>
+Constant position size 1                                                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           8424.28         -2212.21         3.81    -12516.00     22950.00      -12702.00        -504.00        84.24              16.71<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          6169.10         -1629.86         3.79     -6687.00     14505.00       -7365.00        -471.00        61.69              13.10<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          6169.10         -1629.86         3.79     -6687.00     14505.00       -7365.00        -471.00        61.69              13.10<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      6169.10         -1629.86         3.79     -6687.00     14505.00       -7365.00        -471.00        61.69              13.10<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      6169.10         -1629.86         3.79     -6687.00     14505.00       -7365.00        -471.00        61.69              13.10<br>
+Increase to 2 after win, reset to 1 after loss                                                    8563.27         -1975.31         4.34     -8199.00     23694.00       -8592.00        -690.00        85.63              12.41<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             8563.27         -1975.31         4.34     -8199.00     23694.00       -8592.00        -690.00        85.63              12.41<br>
+Pause after 3 wins until next loss                                                                2684.90         -1000.16         2.68     -6147.00      6378.00       -6519.00        -219.00        26.85              12.26<br>
+Pause after 4 wins until next loss                                                                2684.90         -1000.16         2.68     -6147.00      6378.00       -6519.00        -219.00        26.85              12.26<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                               9867.43         -2292.18         4.30     -8625.00     32019.00       -8919.00        -876.00        98.67              11.26<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+Constant position size 1                                                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+<br>
+Pause after 2 wins until next loss                                                                1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+Constant position size 1                                                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1594.88          -803.05         1.99     -5226.00      4365.00       -5412.00           0.00        15.95                inf<br>
+Constant position size 1                                                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2085.52         -1229.89         1.70     -8502.00      5130.00       -8841.00           0.00        20.86                inf<br>
+Constant position size 1                                                                          5079.07         -1192.84         4.26     -5295.00     12525.00       -5775.00        -252.00        50.79              20.16<br>
+</div>
+<div style="background:#FF9800;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 3/12: hit_rate = 0.72 (with Markov 2.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 72.00%<br>
+Mode: 2nd Order Markov<br>
+P(win|WW): 0.8, P(win|WL): 0.6, P(win|LW): 0.5, P(win|LL): 0.3<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 72%  -  2nd Order Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                  702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+Pause after 2 wins until next loss                                                                 702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                    702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                    908.49         -1955.73         0.46    -10911.00      4965.00      -11763.00           0.00         9.08                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                    2867.89         -2913.30         0.98    -14232.00     14220.00      -14418.00        -219.00        28.68              13.10<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                2867.89         -2913.30         0.98    -14232.00     14220.00      -14418.00        -219.00        28.68              13.10<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              2588.78         -3064.45         0.84    -15690.00     12732.00      -17022.00        -285.00        25.89               9.08<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                2391.11         -2374.39         1.01    -11505.00     11616.00      -11940.00        -285.00        23.91               8.39<br>
+Constant position size 1                                                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           3601.46         -3462.97         1.04    -15987.00     20181.00      -17034.00        -570.00        36.01               6.32<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          2672.13         -2468.44         1.08     -9873.00     13071.00      -10605.00        -471.00        26.72               5.67<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          2672.13         -2468.44         1.08     -9873.00     13071.00      -10605.00        -471.00        26.72               5.67<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      2672.13         -2468.44         1.08     -9873.00     13071.00      -10605.00        -471.00        26.72               5.67<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      2672.13         -2468.44         1.08     -9873.00     13071.00      -10605.00        -471.00        26.72               5.67<br>
+Pause after 3 wins until next loss                                                                1180.77         -1549.66         0.76     -7023.00      6837.00       -7209.00        -219.00        11.81               5.39<br>
+Pause after 4 wins until next loss                                                                1180.77         -1549.66         0.76     -7023.00      6837.00       -7209.00        -219.00        11.81               5.39<br>
+Increase to 2 after win, reset to 1 after loss                                                    3684.81         -2970.49         1.24    -10749.00     19710.00      -11700.00        -690.00        36.85               5.34<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             3684.81         -2970.49         1.24    -10749.00     19710.00      -11700.00        -690.00        36.85               5.34<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                               4218.81         -3302.30         1.28    -10518.00     26142.00      -10713.00        -942.00        42.19               4.48<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                  702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+Constant position size 1                                                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+<br>
+Pause after 2 wins until next loss                                                                 702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+Constant position size 1                                                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                    702.09         -1250.94         0.56     -6726.00      4113.00       -6912.00           0.00         7.02                inf<br>
+Constant position size 1                                                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                    908.49         -1955.73         0.46    -10911.00      4965.00      -11763.00           0.00         9.08                inf<br>
+Constant position size 1                                                                          2193.45         -1847.18         1.19     -7320.00     10500.00       -7647.00        -285.00        21.93               7.70<br>
+</div>
+<div style="background:#9C27B0;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 4/12: hit_rate = 0.72 (with Regime-Switching-Modell) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 72.00%<br>
+Mode: Regime Switching<br>
+Regimes: [{"length": 300, "hit_rate": 0.9, "avg_win": 200, "avg_loss": 100}, {"length": 200, "hit_rate": 0.5, "avg_win": 100, "avg_loss": 100}, {"length": 500, "hit_rate": 0.2, "avg_win": 100, "avg_loss": 200}]<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 72%  -  Regime Switching Model ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1807.90           -67.30        26.86       500.00      3200.00        -300.00           0.00        18.08                inf<br>
+Pause after 2 wins until next loss                                                                1807.90           -67.30        26.86       500.00      3200.00        -300.00           0.00        18.08                inf<br>
+Pause after 3 wins until next loss                                                                3436.60           -95.90        35.84      1100.00      6000.00        -400.00           0.00        34.37                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Pause after 4 wins until next loss                                                                3436.60           -95.90        35.84      1100.00      6000.00        -400.00           0.00        34.37                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1807.90           -67.30        26.86       500.00      3200.00        -300.00           0.00        18.08                inf<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   1978.20           -78.10        25.33       600.00      3600.00        -500.00           0.00        19.78                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                   18729.10          -233.90        80.07     15900.00     19800.00        -700.00        -100.00       187.29             187.29<br>
+Increase to 2 after 2 losses, reset to 1 after win                                               18729.10          -233.90        80.07     15900.00     19800.00        -700.00        -100.00       187.29             187.29<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                         18720.20          -195.50        95.76     15900.00     20000.00        -500.00        -100.00       187.20             187.20<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                         18720.20          -195.50        95.76     15900.00     20000.00        -500.00        -100.00       187.20             187.20<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                     18720.20          -195.50        95.76     15900.00     20000.00        -500.00        -100.00       187.20             187.20<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                     18720.20          -195.50        95.76     15900.00     20000.00        -500.00        -100.00       187.20             187.20<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                             17399.10          -186.00        93.54     14800.00     19500.00        -800.00        -100.00       173.99             173.99<br>
+Increase to 2 after 3 losses, reset to 1 after win                                               17245.30          -176.30        97.82     14700.00     19400.00        -600.00        -100.00       172.45             172.45<br>
+Constant position size 1                                                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+Increase to 2 after win, reset to 1 after loss                                                   32375.10          -267.10       121.21     26000.00     38200.00        -500.00        -200.00       323.75             161.88<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            32375.10          -267.10       121.21     26000.00     38200.00        -500.00        -200.00       323.75             161.88<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          31054.00          -281.70       110.24     23600.00     37600.00        -900.00        -200.00       310.54             155.27<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              44401.30          -362.50       122.49     32200.00     55800.00        -600.00        -300.00       444.01             148.00<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1807.90           -67.30        26.86       500.00      3200.00        -300.00           0.00        18.08                inf<br>
+Constant position size 1                                                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+<br>
+Pause after 2 wins until next loss                                                                1807.90           -67.30        26.86       500.00      3200.00        -300.00           0.00        18.08                inf<br>
+Constant position size 1                                                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+<br>
+Pause after 3 wins until next loss                                                                3436.60           -95.90        35.84      1100.00      6000.00        -400.00           0.00        34.37                inf<br>
+Constant position size 1                                                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+<br>
+Pause after 4 wins until next loss                                                                3436.60           -95.90        35.84      1100.00      6000.00        -400.00           0.00        34.37                inf<br>
+Constant position size 1                                                                         17091.50          -166.60       102.59     14600.00     19400.00        -400.00        -100.00       170.91             170.91<br>
+</div>
+<div style="background:#2196F3;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 5/12: hit_rate = 0.77 (without Markov) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 77.00%<br>
+Mode: No Markov<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 77%  -  No Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+Pause after 2 wins until next loss                                                                2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2749.29          -756.40         3.63      -472.20      5001.60       -2956.50           0.00        27.49                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                   10470.14         -1266.37         8.27      4767.90     15103.50       -3416.40        -240.90       104.70              43.46<br>
+Increase to 2 after 2 losses, reset to 1 after win                                               10470.14         -1266.37         8.27      4767.90     15103.50       -3416.40        -240.90       104.70              43.46<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              9376.51         -1235.67         7.59      4571.10     13616.40       -4533.30        -295.80        93.77              31.70<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                8858.59          -997.72         8.88      4732.20     12685.50       -3175.50        -295.80        88.59              29.95<br>
+Constant position size 1                                                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          13894.16         -1494.94         9.29      5633.40     22127.70       -4752.30        -554.40       138.94              25.06<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          9956.48         -1101.62         9.04      3861.30     14712.90       -3252.90        -459.90        99.56              21.65<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          9956.48         -1101.62         9.04      3861.30     14712.90       -3252.90        -459.90        99.56              21.65<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      9956.48         -1101.62         9.04      3861.30     14712.90       -3252.90        -459.90        99.56              21.65<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      9956.48         -1101.62         9.04      3861.30     14712.90       -3252.90        -459.90        99.56              21.65<br>
+Increase to 2 after win, reset to 1 after loss                                                   14474.14         -1376.15        10.52      5859.90     22546.80       -3252.90        -690.00       144.74              20.98<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            14474.14         -1376.15        10.52      5859.90     22546.80       -3252.90        -690.00       144.74              20.98<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              17375.99         -1674.53        10.38      4596.00     30399.00       -3849.00        -930.90       173.76              18.67<br>
+Pause after 3 wins until next loss                                                                3823.01          -638.92         5.98       847.20      6485.70       -1923.30        -219.00        38.23              17.46<br>
+Pause after 4 wins until next loss                                                                3823.01          -638.92         5.98       847.20      6485.70       -1923.30        -219.00        38.23              17.46<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+Constant position size 1                                                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+<br>
+Pause after 2 wins until next loss                                                                2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+Constant position size 1                                                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   2207.19          -521.94         4.23      -147.00      4264.50       -1701.00           0.00        22.07                inf<br>
+Constant position size 1                                                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2749.29          -756.40         3.63      -472.20      5001.60       -2956.50           0.00        27.49                inf<br>
+Constant position size 1                                                                          8340.67          -810.25        10.29      4783.80     12090.30       -2018.70        -295.80        83.41              28.20<br>
+</div>
+<div style="background:#4CAF50;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 6/12: hit_rate = 0.77 (with Markov 1.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 77.00%<br>
+Mode: 1st Order Markov<br>
+P(win|win): 0.8, P(win|loss): 0.4<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 77%  -  1st Order Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+Pause after 2 wins until next loss                                                                1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2111.08         -1209.89         1.74     -5097.00      5010.00       -7011.00           0.00        21.11                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                    6657.60         -1847.23         3.60     -6591.00     16005.00       -9882.00        -219.00        66.58              30.40<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                6657.60         -1847.23         3.60     -6591.00     16005.00       -9882.00        -219.00        66.58              30.40<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              6123.73         -1899.29         3.22     -7971.00     15294.00      -11262.00        -252.00        61.24              24.30<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                5619.63         -1483.21         3.79     -5823.00     14922.00       -8502.00        -252.00        56.20              22.30<br>
+Constant position size 1                                                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           8570.87         -2189.06         3.92     -8607.00     27525.00      -12840.00        -537.00        85.71              15.96<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          6195.16         -1602.16         3.87     -5724.00     16410.00       -6924.00        -438.00        61.95              14.14<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          6195.16         -1602.16         3.87     -5724.00     16410.00       -6924.00        -438.00        61.95              14.14<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      6195.16         -1602.16         3.87     -5724.00     16410.00       -6924.00        -438.00        61.95              14.14<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      6195.16         -1602.16         3.87     -5724.00     16410.00       -6924.00        -438.00        61.95              14.14<br>
+Increase to 2 after win, reset to 1 after loss                                                    8642.30         -1946.91         4.44     -6645.00     28269.00       -8064.00        -657.00        86.42              13.15<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             8642.30         -1946.91         4.44     -6645.00     28269.00       -8064.00        -657.00        86.42              13.15<br>
+Pause after 3 wins until next loss                                                                2668.39          -973.56         2.74     -3564.00      7089.00       -4449.00        -219.00        26.68              12.18<br>
+Pause after 4 wins until next loss                                                                2668.39          -973.56         2.74     -3564.00      7089.00       -4449.00        -219.00        26.68              12.18<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              10009.79         -2268.43         4.41     -7881.00     39012.00       -9246.00        -876.00       100.10              11.43<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+Constant position size 1                                                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+<br>
+Pause after 2 wins until next loss                                                                1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+Constant position size 1                                                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1588.76          -797.45         1.99     -3135.00      4617.00       -4152.00           0.00        15.89                inf<br>
+Constant position size 1                                                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2111.08         -1209.89         1.74     -5097.00      5010.00       -7011.00           0.00        21.11                inf<br>
+Constant position size 1                                                                          5115.52         -1170.93         4.37     -3675.00     14550.00       -5829.00        -252.00        51.16              20.30<br>
+</div>
+<div style="background:#FF9800;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 7/12: hit_rate = 0.77 (with Markov 2.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 77.00%<br>
+Mode: 2nd Order Markov<br>
+P(win|WW): 0.8, P(win|WL): 0.6, P(win|LW): 0.5, P(win|LL): 0.3<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 77%  -  2nd Order Markov ***</span><br>
+<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              2921.07         -2953.00         0.99    -11880.00     13269.00      -13071.00        -438.00        29.21               6.67<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Pause after 3 wins until next loss                                                                1368.49         -1497.88         0.91     -6399.00      6333.00       -6924.00        -219.00        13.68               6.25<br>
+Pause after 4 wins until next loss                                                                1368.49         -1497.88         0.91     -6399.00      6333.00       -6924.00        -219.00        13.68               6.25<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                2691.92         -2295.24         1.17     -8790.00     12897.00       -9708.00        -438.00        26.92               6.15<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           4015.35         -3342.22         1.20    -12210.00     23508.00      -13707.00        -657.00        40.15               6.11<br>
+Increase to 2 after win, reset to 1 after loss                                                    4105.10         -2866.66         1.43    -10005.00     24285.00       -9882.00        -690.00        41.05               5.95<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             4105.10         -2866.66         1.43    -10005.00     24285.00       -9882.00        -690.00        41.05               5.95<br>
+Constant position size 1                                                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                               4651.34         -3189.07         1.46     -9468.00     33135.00      -10452.00        -876.00        46.51               5.31<br>
+Increase to 2 after loss, reset to 1 after win                                                    3253.96         -2813.22         1.16    -10740.00     14910.00      -11811.00        -657.00        32.54               4.95<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                3253.96         -2813.22         1.16    -10740.00     14910.00      -11811.00        -657.00        32.54               4.95<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   1051.51         -1866.82         0.56     -8163.00      5349.00       -8742.00        -219.00        10.52               4.80<br>
+Pause after 1 win until next loss                                                                  820.45         -1191.07         0.69     -5259.00      4146.00       -5412.00        -219.00         8.20               3.75<br>
+Pause after 2 wins until next loss                                                                 820.45         -1191.07         0.69     -5259.00      4146.00       -5412.00        -219.00         8.20               3.75<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                    820.45         -1191.07         0.69     -5259.00      4146.00       -5412.00        -219.00         8.20               3.75<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              2921.07         -2953.00         0.99    -11880.00     13269.00      -13071.00        -438.00        29.21               6.67<br>
+Constant position size 1                                                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Constant position size 1                                                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Constant position size 1                                                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      3010.82         -2391.59         1.26     -9216.00     14910.00       -9444.00        -471.00        30.11               6.39<br>
+Constant position size 1                                                                          2462.78         -1781.74         1.38     -5700.00     12525.00       -7089.00        -438.00        24.63               5.62<br>
+</div>
+<div style="background:#9C27B0;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 8/12: hit_rate = 0.77 (with Regime-Switching-Modell) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 77.00%<br>
+Mode: Regime Switching<br>
+Regimes: [{"length": 300, "hit_rate": 0.9, "avg_win": 200, "avg_loss": 100}, {"length": 200, "hit_rate": 0.5, "avg_win": 100, "avg_loss": 100}, {"length": 500, "hit_rate": 0.2, "avg_win": 100, "avg_loss": 200}]<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 77%  -  Regime Switching Model ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1805.90           -71.40        25.29       400.00      3400.00        -400.00           0.00        18.06                inf<br>
+Pause after 2 wins until next loss                                                                1805.90           -71.40        25.29       400.00      3400.00        -400.00           0.00        18.06                inf<br>
+Pause after 3 wins until next loss                                                                3431.10          -101.50        33.80       800.00      6000.00        -400.00           0.00        34.31                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Pause after 4 wins until next loss                                                                3431.10          -101.50        33.80       800.00      6000.00        -400.00           0.00        34.31                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1805.90           -71.40        25.29       400.00      3400.00        -400.00           0.00        18.06                inf<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   1990.70           -83.00        23.98       400.00      3700.00        -700.00           0.00        19.91                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                   18698.60          -242.50        77.11     16300.00     19800.00        -900.00        -100.00       186.99             186.99<br>
+Increase to 2 after 2 losses, reset to 1 after win                                               18698.60          -242.50        77.11     16300.00     19800.00        -900.00        -100.00       186.99             186.99<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                         18686.70          -201.30        92.83     16100.00     20000.00        -500.00        -100.00       186.87             186.87<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                         18686.70          -201.30        92.83     16100.00     20000.00        -500.00        -100.00       186.87             186.87<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                     18686.70          -201.30        92.83     16100.00     20000.00        -500.00        -100.00       186.87             186.87<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                     18686.70          -201.30        92.83     16100.00     20000.00        -500.00        -100.00       186.87             186.87<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                             17393.10          -193.10        90.07     14500.00     19400.00       -1100.00        -100.00       173.93             173.93<br>
+Increase to 2 after 3 losses, reset to 1 after win                                               17227.30          -182.10        94.60     14400.00     19400.00        -800.00        -100.00       172.27             172.27<br>
+Constant position size 1                                                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+Increase to 2 after win, reset to 1 after loss                                                   32317.10          -271.50       119.03     25400.00     38400.00        -600.00        -200.00       323.17             161.59<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            32317.10          -271.50       119.03     25400.00     38400.00        -600.00        -200.00       323.17             161.59<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          31023.50          -288.40       107.57     23300.00     38000.00       -1200.00        -200.00       310.24             155.12<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              44322.30          -366.50       120.93     31100.00     56600.00        -700.00        -300.00       443.22             147.74<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1805.90           -71.40        25.29       400.00      3400.00        -400.00           0.00        18.06                inf<br>
+Constant position size 1                                                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+<br>
+Pause after 2 wins until next loss                                                                1805.90           -71.40        25.29       400.00      3400.00        -400.00           0.00        18.06                inf<br>
+Constant position size 1                                                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+<br>
+Pause after 3 wins until next loss                                                                3431.10          -101.50        33.80       800.00      6000.00        -400.00           0.00        34.31                inf<br>
+Constant position size 1                                                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+<br>
+Pause after 4 wins until next loss                                                                3431.10          -101.50        33.80       800.00      6000.00        -400.00           0.00        34.31                inf<br>
+Constant position size 1                                                                         17061.50          -171.10        99.72     14300.00     19400.00        -500.00        -100.00       170.62             170.62<br>
+</div>
+<div style="background:#2196F3;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 9/12: hit_rate = 0.82 (without Markov) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 82.00%<br>
+Mode: No Markov<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 82%  -  No Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 2189.43          -392.20         5.58      -813.30      4249.20       -1697.40           0.00        21.89                inf<br>
+Pause after 2 wins until next loss                                                                2189.43          -392.20         5.58      -813.30      4249.20       -1697.40           0.00        21.89                inf<br>
+Pause after 3 wins until next loss                                                                3927.06          -485.11         8.10       420.30      7128.00       -1733.70           0.00        39.27                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Pause after 4 wins until next loss                                                                3927.06          -485.11         8.10       420.30      7128.00       -1733.70           0.00        39.27                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   2189.43          -392.20         5.58      -813.30      4249.20       -1697.40           0.00        21.89                inf<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2629.09          -530.28         4.96      -621.30      4621.20       -2913.00           0.00        26.29                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                   12503.26         -1008.76        12.39      7027.80     16442.70       -3300.00        -240.90       125.03              51.90<br>
+Increase to 2 after 2 losses, reset to 1 after win                                               12503.26         -1008.76        12.39      7027.80     16442.70       -3300.00        -240.90       125.03              51.90<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                         12152.97          -881.92        13.78      7004.10     16591.50       -2346.90        -240.90       121.53              50.45<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                         12152.97          -881.92        13.78      7004.10     16591.50       -2346.90        -240.90       121.53              50.45<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                     12152.97          -881.92        13.78      7004.10     16591.50       -2346.90        -240.90       121.53              50.45<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                     12152.97          -881.92        13.78      7004.10     16591.50       -2346.90        -240.90       121.53              50.45<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                             11247.66          -910.31        12.36      6618.30     14936.10       -4066.80        -240.90       112.48              46.69<br>
+Increase to 2 after 3 losses, reset to 1 after win                                               10831.50          -771.04        14.05      6512.70     14731.50       -2851.20        -240.90       108.32              44.96<br>
+Constant position size 1                                                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+Increase to 2 after win, reset to 1 after loss                                                   18641.25         -1130.49        16.49      9994.80     27453.30       -2565.90        -481.80       186.41              38.69<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            18641.25         -1130.49        16.49      9994.80     27453.30       -2565.90        -481.80       186.41              38.69<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          17735.94         -1163.62        15.24      7498.80     26591.70       -4154.70        -481.80       177.36              36.81<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              23391.89         -1424.37        16.42      8168.10     38656.50       -3184.20        -722.70       233.92              32.37<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 2189.43          -392.20         5.58      -813.30      4249.20       -1697.40           0.00        21.89                inf<br>
+Constant position size 1                                                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+<br>
+Pause after 2 wins until next loss                                                                2189.43          -392.20         5.58      -813.30      4249.20       -1697.40           0.00        21.89                inf<br>
+Constant position size 1                                                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+<br>
+Pause after 3 wins until next loss                                                                3927.06          -485.11         8.10       420.30      7128.00       -1733.70           0.00        39.27                inf<br>
+Constant position size 1                                                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+<br>
+Pause after 4 wins until next loss                                                                3927.06          -485.11         8.10       420.30      7128.00       -1733.70           0.00        39.27                inf<br>
+Constant position size 1                                                                         10415.34          -659.37        15.80      6407.10     14526.90       -1887.00        -240.90       104.15              43.24<br>
+</div>
+<div style="background:#4CAF50;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 10/12: hit_rate = 0.82 (with Markov 1.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 82.00%<br>
+Mode: 1st Order Markov<br>
+P(win|win): 0.8, P(win|loss): 0.4<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 82%  -  1st Order Markov ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+Pause after 2 wins until next loss                                                                1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2141.83         -1213.13         1.77     -4374.00      5316.00       -5511.00           0.00        21.42                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                    6813.59         -1844.63         3.69     -4905.00     15753.00       -7449.00        -219.00        68.14              31.11<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                6813.59         -1844.63         3.69     -4905.00     15753.00       -7449.00        -219.00        68.14              31.11<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              6188.93         -1909.12         3.24     -5475.00     14079.00       -9081.00        -252.00        61.89              24.56<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                5707.92         -1489.35         3.83     -3765.00     13707.00       -6726.00        -252.00        57.08              22.65<br>
+Constant position size 1                                                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           8683.30         -2198.25         3.95     -5532.00     24165.00       -9936.00        -471.00        86.83              18.44<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              10215.63         -2260.99         4.52     -7137.00     33945.00       -7782.00        -690.00       102.16              14.81<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          6313.51         -1606.80         3.93     -4137.00     15348.00       -6399.00        -438.00        63.14              14.41<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          6313.51         -1606.80         3.93     -4137.00     15348.00       -6399.00        -438.00        63.14              14.41<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      6313.51         -1606.80         3.93     -4137.00     15348.00       -6399.00        -438.00        63.14              14.41<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      6313.51         -1606.80         3.93     -4137.00     15348.00       -6399.00        -438.00        63.14              14.41<br>
+Increase to 2 after win, reset to 1 after loss                                                    8807.87         -1953.16         4.51     -5682.00     25281.00       -7713.00        -657.00        88.08              13.41<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             8807.87         -1953.16         4.51     -5682.00     25281.00       -7713.00        -657.00        88.08              13.41<br>
+Pause after 3 wins until next loss                                                                2732.53          -974.48         2.80     -2655.00      6519.00       -3921.00        -219.00        27.33              12.48<br>
+Pause after 4 wins until next loss                                                                2732.53          -974.48         2.80     -2655.00      6519.00       -3921.00        -219.00        27.33              12.48<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+Constant position size 1                                                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+<br>
+Pause after 2 wins until next loss                                                                1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+Constant position size 1                                                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1645.93          -791.57         2.08     -2664.00      4551.00       -3309.00           0.00        16.46                inf<br>
+Constant position size 1                                                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2141.83         -1213.13         1.77     -4374.00      5316.00       -5511.00           0.00        21.42                inf<br>
+Constant position size 1                                                                          5226.90         -1172.91         4.46     -2055.00     13335.00       -4482.00        -252.00        52.27              20.74<br>
+</div>
+<div style="background:#FF9800;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 11/12: hit_rate = 0.82 (with Markov 2.Ord) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 82.00%<br>
+Mode: 2nd Order Markov<br>
+P(win|WW): 0.8, P(win|WL): 0.6, P(win|LW): 0.5, P(win|LL): 0.3<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 82%  -  2nd Order Markov ***</span><br>
+<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              3128.34         -2938.58         1.06    -16806.00     12360.00      -18195.00        -438.00        31.28               7.14<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                      3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                           4337.10         -3315.09         1.31    -18033.00     20958.00      -19575.00        -657.00        43.37               6.60<br>
+Increase to 2 after 3 losses, reset to 1 after win                                                2877.57         -2285.59         1.26    -12063.00     11835.00      -13266.00        -438.00        28.78               6.57<br>
+Pause after 3 wins until next loss                                                                1418.04         -1498.72         0.95     -7275.00      6750.00       -7242.00        -219.00        14.18               6.48<br>
+Pause after 4 wins until next loss                                                                1418.04         -1498.72         0.95     -7275.00      6750.00       -7242.00        -219.00        14.18               6.48<br>
+Increase to 2 after win, reset to 1 after loss                                                    4447.33         -2846.40         1.56     -9939.00     21516.00      -10824.00        -690.00        44.47               6.45<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                             4447.33         -2846.40         1.56     -9939.00     21516.00      -10824.00        -690.00        44.47               6.45<br>
+Constant position size 1                                                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                               5044.33         -3189.65         1.58     -9807.00     30126.00      -11097.00        -942.00        50.44               5.35<br>
+Increase to 2 after loss, reset to 1 after win                                                    3415.55         -2821.17         1.21    -12831.00     13848.00      -14187.00        -657.00        34.16               5.20<br>
+Increase to 2 after 2 losses, reset to 1 after win                                                3415.55         -2821.17         1.21    -12831.00     13848.00      -14187.00        -657.00        34.16               5.20<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   1059.49         -1880.46         0.56     -9882.00      5316.00      -10779.00        -219.00        10.59               4.84<br>
+Pause after 1 win until next loss                                                                  806.27         -1209.86         0.67     -5730.00      3960.00       -5850.00        -219.00         8.06               3.68<br>
+Pause after 2 wins until next loss                                                                 806.27         -1209.86         0.67     -5730.00      3960.00       -5850.00        -219.00         8.06               3.68<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                    806.27         -1209.86         0.67     -5730.00      3960.00       -5850.00        -219.00         8.06               3.68<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                              3128.34         -2938.58         1.06    -16806.00     12360.00      -18195.00        -438.00        31.28               7.14<br>
+Constant position size 1                                                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                          3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Constant position size 1                                                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                          3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Constant position size 1                                                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                      3238.57         -2359.77         1.37     -8865.00     13914.00       -9444.00        -471.00        32.39               6.88<br>
+Constant position size 1                                                                          2626.80         -1776.81         1.48     -7320.00     11310.00       -8337.00        -438.00        26.27               6.00<br>
+</div>
+<div style="background:#9C27B0;color:#fff;padding:8px 0 8px 10px;margin:18px 0 8px 0;font-weight:bold;font-size:1.1em;">--- Run 12/12: hit_rate = 0.82 (with Regime-Switching-Modell) ---</div>
+<div style="font-family:monospace;font-size:1.13em;white-space:pre;"><br>
+==========================================================================================<br>
+CURRENT SIMULATION SETTING:<br>
+Hit rate: 82.00%<br>
+Mode: Regime Switching<br>
+Regimes: [{"length": 300, "hit_rate": 0.9, "avg_win": 200, "avg_loss": 100}, {"length": 200, "hit_rate": 0.5, "avg_win": 100, "avg_loss": 100}, {"length": 500, "hit_rate": 0.2, "avg_win": 100, "avg_loss": 200}]<br>
+==========================================================================================<br>
+<br>
+Average win per trade: €186.0<br>
+Average loss per trade: €219.0<br>
+Number of simulations: 200<br>
+Number of trades per simulation: 100<br>
+Number of shuffles per simulation: 5<br>
+Break-even hit rate: 54.07%<br>
+<br>
+Results (Monte Carlo, based on input parameters):<br>
+<br>
+Strategy                                                                                   Avg Profit (€) Avg Drawdown (€)        Ratio      Min (€)      Max (€)     Min DD (€)     Max DD (€)    Avg/Trade       Profit/MaxDD<br>
+===============================================================================================================================================================================================================================<br>
+<br>
+<span style="color:#e6b800;">*** Hit rate: 82%  -  Regime Switching Model ***</span><br>
+<br>
+Pause after 1 win until next loss                                                                 1829.40           -66.90        27.35       600.00      3300.00        -400.00           0.00        18.29                inf<br>
+Pause after 2 wins until next loss                                                                1829.40           -66.90        27.35       600.00      3300.00        -400.00           0.00        18.29                inf<br>
+Pause after 3 wins until next loss                                                                3462.30           -96.90        35.73      1400.00      6100.00        -500.00           0.00        34.62                inf<br>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+Pause after 4 wins until next loss                                                                3462.30           -96.90        35.73      1400.00      6100.00        -500.00           0.00        34.62                inf<br>
+Pause after 2 consecutive wins until 1 loss, then increase to 2                                   1829.40           -66.90        27.35       600.00      3300.00        -400.00           0.00        18.29                inf<br>
+Increase to 2 after 2 losses, pause after 1 win until next loss                                   2007.60           -76.40        26.28       800.00      3900.00        -700.00           0.00        20.08                inf<br>
+Increase to 2 after loss, reset to 1 after win                                                   18707.10          -233.30        80.18     16200.00     19600.00        -900.00        -100.00       187.07             187.07<br>
+Increase to 2 after 2 losses, reset to 1 after win                                               18707.10          -233.30        80.18     16200.00     19600.00        -900.00        -100.00       187.07             187.07<br>
+Increase to 2 after win, reset to 1 after loss or 3 wins                                         18683.90          -196.80        94.94     15200.00     19800.00        -600.00        -100.00       186.84             186.84<br>
+Increase to 2 after win, reset to 1 after loss or 4 wins                                         18683.90          -196.80        94.94     15200.00     19800.00        -600.00        -100.00       186.84             186.84<br>
+Increase to 2 after 1 win and 1 loss, else 1                                                     18683.90          -196.80        94.94     15200.00     19800.00        -600.00        -100.00       186.84             186.84<br>
+Increase to 2 after 1 win only if preceded by 1 loss, else 1                                     18683.90          -196.80        94.94     15200.00     19800.00        -600.00        -100.00       186.84             186.84<br>
+Increase to 2 after 1 win, to 3 after 2 losses, reset to 1 after win                             17377.20          -184.00        94.44     15000.00     19200.00       -1100.00        -100.00       173.77             173.77<br>
+Increase to 2 after 3 losses, reset to 1 after win                                               17214.10          -175.20        98.25     14600.00     19000.00        -800.00        -100.00       172.14             172.14<br>
+Constant position size 1                                                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+Increase to 2 after win, reset to 1 after loss or 2 wins                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+Increase to 2 after win, reset to 1 after loss                                                   32272.60          -267.70       120.56     24700.00     36900.00        -600.00        -200.00       322.73             161.36<br>
+Increase to 2 after 2 wins, reset to 1 after 2 losses                                            32272.60          -267.70       120.56     24700.00     36900.00        -600.00        -200.00       322.73             161.36<br>
+Increase to 2 after 2 wins, to 3 after 2 losses, else 1                                          30965.90          -278.50       111.19     23400.00     36500.00       -1100.00        -200.00       309.66             154.83<br>
+Increase to 3 after 3 wins, reset to 1 after 1 loss                                              44228.40          -361.10       122.48     30400.00     53400.00        -600.00        -300.00       442.28             147.43<br>
+<br>
+<br>
+<br>
+Top 4 strategies compared to 'Constant position size 1':<br>
+--------------------------------------------------------------<br>
+<br>
+Pause after 1 win until next loss                                                                 1829.40           -66.90        27.35       600.00      3300.00        -400.00           0.00        18.29                inf<br>
+Constant position size 1                                                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+<br>
+Pause after 2 wins until next loss                                                                1829.40           -66.90        27.35       600.00      3300.00        -400.00           0.00        18.29                inf<br>
+Constant position size 1                                                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+<br>
+Pause after 3 wins until next loss                                                                3462.30           -96.90        35.73      1400.00      6100.00        -500.00           0.00        34.62                inf<br>
+Constant position size 1                                                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+<br>
+Pause after 4 wins until next loss                                                                3462.30           -96.90        35.73      1400.00      6100.00        -500.00           0.00        34.62                inf<br>
+Constant position size 1                                                                         17051.00          -166.40       102.47     14000.00     18800.00        -500.00        -100.00       170.51             170.51<br>
+</div>
+</body></html>
