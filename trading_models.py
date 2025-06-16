@@ -421,7 +421,7 @@ def find_break_even_hit_rate(avg_win, avg_loss, mode):
     if base_rate == float('inf'):
         print("❌ ERROR: Calculation resulted in an infinite value!")
         return None
-    
+
     # Adjust the calculation based on the selected mode
     if mode == "1st Order Markov":
         p_adj = 0.7  # Example value, should be dynamically determined

@@ -45,6 +45,13 @@ import threading
 from datetime import datetime
 import pandas as pd
 import re
+from output_handler import save_json
+from influx_handler import load_config  # Lade die InfluxDB-Konfigurationsfunktion
+from influx_handler import write_to_influxdb  # ✅ Richtig
+from influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
+from api_handler import start_api
+from output_handler import save_parquet
+from output_handler import save_sql
 
 def run_simulation(cmd):
     # Capture output (stdout)
@@ -142,7 +149,7 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(script_dir, "input.json")
     try:
-        with open(config_path, "r") as file:
+        with open(config_path, "r", encoding="utf-8") as file:  # Ensure proper encoding
             args = json.load(file)
     except FileNotFoundError:
         print(f"Error: '{config_path}' not found.")
@@ -151,6 +158,7 @@ def main():
         print(f"Error parsing JSON file: {e}")
         sys.exit(1)
 
+    # Extract required parameters
     base_hit = args.get("hit_rate")
     if base_hit is None:
         print("Error: 'hit_rate' missing in JSON file.")
@@ -175,6 +183,13 @@ def main():
     p_win_ll = args.get("p_win_ll", 0.3)
     regimes = args.get("regimes", None)
 
+    # Extract API timeout dynamically
+    api_timeout = args.get("api_timeout", 60)  # Default to 60 if missing
+    print(f"\n⏳ API timeout loaded from JSON: {api_timeout} seconds")
+
+    # Load InfluxDB configuration from JSON file
+    influx_config = load_config()
+    
     simulation_cmds = []
     html_blocks = []
     total_runs = 12
@@ -185,7 +200,7 @@ def main():
         html_blocks.append(html_run_header(run_counter, total_runs, hit_rate, "without Markov"))
         cmd = [
             sys.executable,
-            os.path.join(script_dir, "dps_sub.py"),
+            os.path.join(script_dir, "trading_models.py"),
             "--hit_rate", str(hit_rate),
             "--avg_win", str(args["avg_win"]),
             "--avg_loss", str(args["avg_loss"]),
@@ -254,7 +269,7 @@ def main():
 
     # Sort by run number
     html_tables.sort(key=lambda x: x[0])
-      
+
     # Create "results" folder if it doesn't exist
     results_dir = os.path.join(script_dir, "results")
     os.makedirs(results_dir, exist_ok=True)
@@ -264,7 +279,7 @@ def main():
 
     # Save HTML to results subfolder
     html_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.html")
-    
+
     with open(html_output_path, "w", encoding="utf-8") as html_file:
         html_file.write(
             "<html><head><meta charset='utf-8'>"
@@ -282,7 +297,7 @@ def main():
             html_file.write(block + "\n")
             html_file.write(table_html + "\n")
         html_file.write("</body></html>\n")
-    
+
     # Extract simulation settings from HTML content before processing individual strategies
     # Iterate through all simulations
     for idx, table_html in html_tables:
@@ -290,40 +305,40 @@ def main():
 
         # Extract simulation settings using the cleaned text
         simulation_settings = extract_simulation_settings(table_text)
-    
+
     # Print all simulation results to console with cleaned HTML
     for idx, table_html in html_tables:
         clean_text = re.sub(r"<.*?>", "", table_html)  # Remove HTML tags for better readability in console output
         print(f"\n🔹 Simulation Run {idx} Results:")
         print(clean_text)
-    
+
     print("\n✅ Simulation results successfully displayed in the console.")
     print(f"\n✅ HTML overview of the runs has been generated: {html_output_path}")
-    
+
     # Generate timestamp for the filename
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     csv_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.csv")
     excel_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.xlsx")
-    
+
     csv_data = []
-    
+
     # Iterate through all simulations
     for idx, table_html in html_tables:
         table_text = re.sub(r"<.*?>", "", table_html)  # Remove HTML tags for clean processing
-    
+
         # Extract simulation settings before processing strategies
         simulation_settings = extract_simulation_settings(table_text)  
-    
+
         # ✅ Define `filtered_lines` BEFORE using it
         filtered_lines = [
-            line for line in table_text.split("\n") 
+            line for line in table_text.split("\n")
             if len(line.split()) >= 10 and "Top 4 strategies compared to" not in line
         ]
-    
+
         # Process each strategy line
         for line in filtered_lines:
             match = re.match(r"(.+?)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)", line)
-    
+
             if match:
                 strategy_data = {
                     "Run Index": idx,
@@ -344,24 +359,61 @@ def main():
     # Remove duplicate strategy entries
     unique_csv_data = []
     seen_strategies = set()
-    
+
     for entry in csv_data:
         strategy_key = (entry["Run Index"], entry["Strategy"])
         if strategy_key not in seen_strategies:
             seen_strategies.add(strategy_key)
             unique_csv_data.append(entry)
-    
+
     # Create DataFrame and write to CSV
     df = pd.DataFrame(unique_csv_data)
     df.to_csv(csv_output_path, index=False, sep=";", encoding="utf-8-sig")
-    
     print(f"\n✅ CSV file successfully created: {csv_output_path}")
 
     # Create DataFrame and write to XLSX
     df.to_excel(excel_output_path, index=False, engine="openpyxl")
     print(f"\n✅ Excel file successfully created: {excel_output_path}")
 
-    
+    # Save results in JSON format
+    json_output_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.json")
+    save_json(unique_csv_data, results_dir, timestamp)
+    print(f"\n✅ JSON file successfully created: {json_output_path}")
+
+    # Save results in Parquet format
+    save_parquet(unique_csv_data, results_dir, timestamp)
+    print(f"\n✅ Parquet file successfully created: {os.path.join(results_dir, f'simulation_runs_{timestamp}.parquet')}")
+
+    # Write results to InfluxDB (if integrating with InfluxDB)
+    # from influx_handler import write_to_influxdb
+    # write_to_influxdb(csv_data)
+    # Check if InfluxDB usage is enabled
+    use_influxdb = influx_config.get("use_influxdb", False)  # Default to False if missing
+
+    if use_influxdb:
+        # print("\n📡 Writing simulation results to InfluxDB...")
+        try:
+            write_to_influxdb(unique_csv_data)  # Write simulation data to InfluxDB
+            print("\n✅ Data successfully written to InfluxDB!")
+        except Exception as e:
+            print(f"\n⚠ Error writing to InfluxDB: {e}")
+
+    #sqlite3 output
+    db_path = "simulation_results.db"  # SQLite-Datenbankpfad
+    save_sql(unique_csv_data, results_dir, timestamp)
+    print(f"\n✅ SQLite database file successfully created: {os.path.join(results_dir, f'simulation_runs_{timestamp}.parquet')}")
+
+    # Ask user if the REST API should be started
+    run_api = input("\n❓ Should the REST API be started? (y/n): ").strip().lower()
+
+    if run_api == "y":
+        print("\n🚀 Starting the REST API with a timeout of", api_timeout, "seconds...")
+        start_api(unique_csv_data, api_timeout)  # Pass the timeout dynamically
+    else:
+        print("\n⏹ REST API was not started.")
+
+    print("\n✅ All data has been successfully saved!")
+
 if __name__ == "__main__":
     main()  # Calls main() to execute the script
 
