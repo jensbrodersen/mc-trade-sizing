@@ -3,11 +3,6 @@ pandas
 argparse
 openpyxl
 pyarrow
-concurrent.futures
-threading
-datetime
-re
-signal
 flask
 requests
 influxdb-client
