@@ -79,7 +79,7 @@ curl http://127.0.0.1:5000/api/simulations
 curl http://127.0.0.1:5000/api/simulations
 ```
 
-7. Output: HTML performance reports in `/results/`
+7. Output: All performance reports in `/results/`
 
 ---
 
@@ -193,7 +193,7 @@ python dps.py
 ```
 
 → Runs 20 strategies × 1000 Monte Carlo simulations = 20,000 runs.
-→ Results saved in `/results/*.html`
+→ Results saved in `/results/*.*`
 
 ---
 
