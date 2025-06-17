@@ -10,13 +10,23 @@ different market scenarios.
 
 ---
 
-## Features
+## Features  
 
-- Monte Carlo simulation framework for trade outcome modeling  
-- Dynamic position sizing strategies based on trade series analysis  
-- Markov and regime-switching models for realistic simulations  
-- Comparison of risk and return metrics under various assumptions  
-- Generates detailed performance reports in HTML  
+- Monte Carlo simulation framework for trade outcome modeling
+- Dynamic position sizing strategies based on trade series analysis
+- Markov and regime-switching models for realistic simulations
+- Comparison of risk and return metrics under various assumptions
+- **REST API** for external access to simulation results
+- **Parquet & SQLite3 storage** for efficient result management
+- Generates detailed performance reports in **CSV, HTML, JSON, XLSX, Parquet**
+
+---
+
+## Installation
+
+**Install dependencies:**
+```bash
+pip install -r requirements.txt
 
 ---
 
@@ -43,7 +53,33 @@ sequence dependencies, going beyond static position sizing methods.
 python dps.py
 ```
 
-3. Output: HTML performance reports in `/results/`
+3. Run the REST API:
+
+```bash
+python api_handler.py
+```
+
+4. Access results in /results/ folder or via REST API:
+
+```bash
+curl http://127.0.0.1:5000/api/simulations
+```
+
+5. REST API Usage:
+
+| Endpoint               | Method | Description                        |
+|------------------------|--------|------------------------------------|
+| /api/simulations/     | GET    | Retrieve all simulation results  |
+| /api/simulations/<id> | GET    | Get details on specific runs     |
+| /shutdown            | POST   | Stop the REST API server         |
+
+
+6. 4. REST API Example Request:
+```bash
+curl http://127.0.0.1:5000/api/simulations
+```
+
+7. Output: HTML performance reports in `/results/`
 
 ---
 
@@ -51,15 +87,15 @@ python dps.py
 
 - Constant position sizing  
 - Martingale / anti-Martingale  
-- Streak-based (pause/increase on win/loss)  
-- Pause-combo strategies  
-- Regime- and Markov-based variations  
+- Streak-based (pause/increase on win/loss)
+- Pause-combo strategies
+- Regime- and Markov-based variations
 
 Each strategy runs with multiple Monte Carlo shuffles for robustness testing.
 
 ---
 
-## Simulation Models
+## Supported Simulation Models
 
 ### Random Trade Order (Baseline)
 
@@ -77,11 +113,19 @@ strategies = 20,000 simulations.
   - `--p_win_after_win`
   - `--p_win_after_loss`
 
+```bash
+--use_markov --p_win_after_win 0.75 --p_win_after_loss 0.60
+```
+
 #### Second-Order:
-- Depends on last 2 trades  
+- Depends on last 2 trades
 - Parameters:
   - `--use_markov2`
   - `--p_win_ww`, `--p_win_wl`, `--p_win_lw`, `--p_win_ll`
+
+```bash
+--use_markov2 --p_win_ww 0.85 --p_win_wl 0.65 --p_win_lw 0.55 --p_win_ll 0.30
+```
 
 ---
 
@@ -100,12 +144,43 @@ Models alternating market conditions:
 
 ## Metrics Reported (per Strategy)
 
-- Avg. profit  
-- Avg. drawdown  
-- Profit-to-drawdown ratio  
-- Min/max profit and drawdown  
-- Profit per trade  
-- Profit / max drawdown  
+- Avg. profit
+- Avg. drawdown
+- Profit-to-drawdown ratio
+- Min/max profit and drawdown
+- Profit per trade
+- Profit / max drawdown
+
+---
+
+## Simulation Output Formats
+- CSV → simulation_runs_YYYY-MM-DD_HH-MM-SS.csv
+- Excel → simulation_runs_YYYY-MM-DD_HH-MM-SS.xlsx
+- JSON → simulation_runs_YYYY-MM-DD_HH-MM-SS.json
+- Parquet → simulation_runs_YYYY-MM-DD_HH-MM-SS.parquet
+- SQLite3 → simulation_results.db
+
+---
+
+## Troubleshooting:
+
+REST API does not respond? Ensure Flask is running on 127.0.0.1:5000:
+
+```bash
+python api_handler.py
+```
+
+Verify firewall & port settings:
+```Powershell
+netstat -ano | findstr :5000
+```
+
+Test API manually:
+```bash
+curl http://127.0.0.1:5000/api/simulations
+```
+
+Database file not found? Check SQLite3 or Parquet storage in /results/
 
 ---
 
@@ -115,7 +190,7 @@ Models alternating market conditions:
 python dps.py
 ```
 
-→ Runs 20 strategies × 1000 Monte Carlo simulations = 20,000 runs.  
+→ Runs 20 strategies × 1000 Monte Carlo simulations = 20,000 runs.
 → Results saved in `/results/*.html`
 
 ---
@@ -155,5 +230,4 @@ sponsoring further development 🙏
 👉 GitHub Sponsors button will appear once the profile is approved.
 
 ---
-
 
