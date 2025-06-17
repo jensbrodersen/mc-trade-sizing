@@ -3,10 +3,6 @@ pandas
 argparse
 openpyxl
 pyarrow
-subprocess
-json
-os
-sys
 concurrent.futures
 threading
 datetime
@@ -14,10 +10,7 @@ re
 signal
 flask
 requests
-collections
-time
 influxdb-client
-sqlite3
 fastparquet
 sqlalchemy
 
