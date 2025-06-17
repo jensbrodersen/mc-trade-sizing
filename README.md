@@ -154,6 +154,8 @@ Models alternating market conditions:
 ---
 
 ## Simulation Output Formats
+- Terminal Window
+- HTML → simulation_runs_YYYY-MM-DD_HH-MM-SS.html
 - CSV → simulation_runs_YYYY-MM-DD_HH-MM-SS.csv
 - Excel → simulation_runs_YYYY-MM-DD_HH-MM-SS.xlsx
 - JSON → simulation_runs_YYYY-MM-DD_HH-MM-SS.json
