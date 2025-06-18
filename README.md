@@ -161,6 +161,7 @@ Models alternating market conditions:
 - JSON → simulation_runs_YYYY-MM-DD_HH-MM-SS.json
 - Parquet → simulation_runs_YYYY-MM-DD_HH-MM-SS.parquet
 - SQLite3 → simulation_results.db
+- InfluxDB → Time-series storage for efficient analysis and visualization
 
 ---
 
