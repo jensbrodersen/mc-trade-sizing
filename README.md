@@ -17,7 +17,7 @@ different market scenarios.
 - Markov and regime-switching models for realistic simulations
 - Comparison of risk and return metrics under various assumptions
 - **REST API** for external access to simulation results
-- **Parquet & SQLite3 storage** for efficient result management
+- **Parquet & InfluxDB & SQLite3 storage** for efficient result management
 - Generates detailed performance reports in **CSV, HTML, JSON, XLSX, Parquet**
 
 ---

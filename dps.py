@@ -49,6 +49,7 @@ from output_handler import save_json
 from influx_handler import load_config  # Lade die InfluxDB-Konfigurationsfunktion
 from influx_handler import write_to_influxdb  # ✅ Richtig
 from influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
+from influx_handler import load_config, write_to_influxdb, is_influxdb_reachable
 from api_handler import start_api
 from output_handler import save_parquet
 from output_handler import save_sql
@@ -182,10 +183,6 @@ def main():
     p_win_lw = args.get("p_win_lw", 0.5)
     p_win_ll = args.get("p_win_ll", 0.3)
     regimes = args.get("regimes", None)
-
-    # Extract API timeout dynamically
-    api_timeout = args.get("api_timeout", 60)  # Default to 60 if missing
-    print(f"\n⏳ API timeout loaded from JSON: {api_timeout} seconds")
 
     # Load InfluxDB configuration from JSON file
     influx_config = load_config()
@@ -388,15 +385,28 @@ def main():
     # from influx_handler import write_to_influxdb
     # write_to_influxdb(csv_data)
     # Check if InfluxDB usage is enabled
+    config = load_config()
     use_influxdb = influx_config.get("use_influxdb", False)  # Default to False if missing
 
-    if use_influxdb:
-        # print("\n📡 Writing simulation results to InfluxDB...")
+#orig    if use_influxdb:
+#orig        # print("\n📡 Writing simulation results to InfluxDB...")
+#orig        try:
+#orig            write_to_influxdb(unique_csv_data)  # Write simulation data to InfluxDB
+#orig            print("\n✅ Data successfully written to InfluxDB!")
+#orig        except Exception as e:
+#orig            print(f"\n⚠ Error writing to InfluxDB: {e}")
+########
+    if use_influxdb and is_influxdb_reachable(config["influxdb_url"]):
         try:
-            write_to_influxdb(unique_csv_data)  # Write simulation data to InfluxDB
+            write_to_influxdb(unique_csv_data)
             print("\n✅ Data successfully written to InfluxDB!")
         except Exception as e:
             print(f"\n⚠ Error writing to InfluxDB: {e}")
+    elif use_influxdb:
+        print("\n⚠ InfluxDB is enabled, but the server is unreachable. Skipping write.")
+    else:
+        print("\nℹ️ InfluxDB usage is disabled in configuration.")
+#########
 
     #sqlite3 output
     db_path = "simulation_results.db"  # SQLite-Datenbankpfad
@@ -407,6 +417,9 @@ def main():
     run_api = input("\n❓ Should the REST API be started? (y/n): ").strip().lower()
 
     if run_api == "y":
+        # Extract API timeout dynamically
+        api_timeout = args.get("api_timeout", 60)  # Default to 60 if missing
+        print(f"\n⏳ API timeout loaded from JSON: {api_timeout} seconds")
         print("\n🚀 Starting the REST API with a timeout of", api_timeout, "seconds...")
         start_api(unique_csv_data, api_timeout)  # Pass the timeout dynamically
     else:

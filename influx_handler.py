@@ -6,6 +6,20 @@ def load_config():
     with open("input.json", "r", encoding="utf-8") as file:  # Nutze dein bestehendes JSON-File
         return json.load(file)
 
+import socket
+from urllib.parse import urlparse
+
+def is_influxdb_reachable(url, timeout=2):
+    """Check if the InfluxDB server is reachable."""
+    try:
+        parsed = urlparse(url)
+        host = parsed.hostname
+        port = parsed.port or 80
+        with socket.create_connection((host, port), timeout):
+            return True
+    except Exception:
+        return False
+
 def write_to_influxdb(data):
     """Writes simulation results to InfluxDB."""
     config = load_config()

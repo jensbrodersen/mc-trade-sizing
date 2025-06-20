@@ -9,7 +9,7 @@
   "_comment_4": "=========================",
   "num_simulations": 200,
   "num_trades": 1000,
-  "num_mc_shuffles": 50,
+  "num_mc_shuffles": 20,
 
   "_comment_5": "Markov Order 1",
   "_comment_6": "===============",
