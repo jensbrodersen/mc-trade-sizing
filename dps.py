@@ -45,14 +45,37 @@ import threading
 from datetime import datetime
 import pandas as pd
 import re
-from output_handler import save_json
-from influx_handler import load_config  # Lade die InfluxDB-Konfigurationsfunktion
-from influx_handler import write_to_influxdb  # ✅ Richtig
-from influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
-from influx_handler import load_config, write_to_influxdb, is_influxdb_reachable
-from api_handler import start_api
-from output_handler import save_parquet
-from output_handler import save_sql
+import threading
+import queue
+import sys
+from src.output_handler import save_json
+from src.influx_handler import load_config  # Lade die InfluxDB-Konfigurationsfunktion
+from src.influx_handler import write_to_influxdb  # ✅ Richtig
+from src.influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
+from src.influx_handler import load_config, write_to_influxdb, is_influxdb_reachable
+from src.api_handler import start_api
+from src.output_handler import save_parquet
+from src.output_handler import save_sql
+
+def timed_input(prompt, timeout=8, default="n"):
+    print(prompt, end="", flush=True)
+    result = queue.Queue()
+
+    def ask():
+        try:
+            result.put(sys.stdin.readline().strip())
+        except Exception:
+            result.put(default)
+
+    t = threading.Thread(target=ask)
+    t.daemon = True
+    t.start()
+    t.join(timeout)
+
+    if t.is_alive():
+        print(f"\n⏱ No input after {timeout} seconds, defaulting to '{default}'")
+        return default.lower()
+    return result.get().lower()
 
 def run_simulation(cmd):
     # Capture output (stdout)
@@ -197,7 +220,7 @@ def main():
         html_blocks.append(html_run_header(run_counter, total_runs, hit_rate, "without Markov"))
         cmd = [
             sys.executable,
-            os.path.join(script_dir, "trading_models.py"),
+            os.path.join(script_dir, "src", "trading_models.py"),
             "--hit_rate", str(hit_rate),
             "--avg_win", str(args["avg_win"]),
             "--avg_loss", str(args["avg_loss"]),
@@ -388,14 +411,6 @@ def main():
     config = load_config()
     use_influxdb = influx_config.get("use_influxdb", False)  # Default to False if missing
 
-#orig    if use_influxdb:
-#orig        # print("\n📡 Writing simulation results to InfluxDB...")
-#orig        try:
-#orig            write_to_influxdb(unique_csv_data)  # Write simulation data to InfluxDB
-#orig            print("\n✅ Data successfully written to InfluxDB!")
-#orig        except Exception as e:
-#orig            print(f"\n⚠ Error writing to InfluxDB: {e}")
-########
     if use_influxdb and is_influxdb_reachable(config["influxdb_url"]):
         try:
             write_to_influxdb(unique_csv_data)
@@ -406,7 +421,6 @@ def main():
         print("\n⚠ InfluxDB is enabled, but the server is unreachable. Skipping write.")
     else:
         print("\nℹ️ InfluxDB usage is disabled in configuration.")
-#########
 
     #sqlite3 output
     db_path = "simulation_results.db"  # SQLite-Datenbankpfad
@@ -414,11 +428,10 @@ def main():
     print(f"\n✅ SQLite database file successfully created: {os.path.join(results_dir, f'simulation_runs_{timestamp}.parquet')}")
 
     # Ask user if the REST API should be started
-    run_api = input("\n❓ Should the REST API be started? (y/n): ").strip().lower()
-
+    run_api = timed_input("\n❓ Should the REST API be started? (y/n): ")
     if run_api == "y":
         # Extract API timeout dynamically
-        api_timeout = args.get("api_timeout", 60)  # Default to 60 if missing
+        api_timeout = config.get("api_timeout", 60) # Default to 60 if missing
         print(f"\n⏳ API timeout loaded from JSON: {api_timeout} seconds")
         print("\n🚀 Starting the REST API with a timeout of", api_timeout, "seconds...")
         start_api(unique_csv_data, api_timeout)  # Pass the timeout dynamically
