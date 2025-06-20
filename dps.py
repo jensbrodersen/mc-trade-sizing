@@ -45,13 +45,10 @@ import threading
 from datetime import datetime
 import pandas as pd
 import re
-import threading
 import queue
-import sys
 from src.output_handler import save_json
-from src.influx_handler import load_config  # Lade die InfluxDB-Konfigurationsfunktion
 from src.influx_handler import write_to_influxdb  # ✅ Richtig
-from src.influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
+from influxdb_client import Point  # ✅ Importiere Point direkt aus influxdb_client
 from src.influx_handler import load_config, write_to_influxdb, is_influxdb_reachable
 from src.api_handler import start_api
 from src.output_handler import save_parquet
