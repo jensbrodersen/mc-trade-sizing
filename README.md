@@ -27,6 +27,20 @@ different market scenarios.
 **Install dependencies:**
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Docker
+
+Alternatively, use the provided Docker image:
+
+```bash
+docker run -it -v "$PWD/results":/app/results jensbrodersen/mc-trade-sizing
+```
+
+> **Note:**
+> See Quick Start step 3 for usage details.
 
 ---
 
@@ -47,25 +61,35 @@ sequence dependencies, going beyond static position sizing methods.
 "avg_loss": 219
 ```
 
-2. Run the simulator:
+2. Run the simulator locally (Python script):
 
 ```bash
 python dps.py
 ```
 
-3. Run the REST API:
+3. Run the simulator via Docker (with interactive prompt support):
+
+```bash
+docker run -it -v "$PWD/results":/app/results jensbrodersen/mc-trade-sizing
+```
+> **Note:**
+> The `-it` flags (`-i` for interactive, `-t` for pseudo-TTY) are required to enable keyboard input inside the container.
+> Without `-it`, any prompts (e.g. confirmation for starting the REST API) will be skipped automatically.
+
+4. Run the REST API:
 
 ```bash
 python api_handler.py
 ```
 
-4. Access results in /results/ folder or via REST API:
+
+5. Access results in results/ folder or via REST API:
 
 ```bash
 curl http://127.0.0.1:5000/api/simulations
 ```
 
-5. REST API Usage:
+6. REST API Usage:
 
 | Endpoint               | Method | Description                        |
 |------------------------|--------|------------------------------------|
@@ -74,18 +98,18 @@ curl http://127.0.0.1:5000/api/simulations
 | /shutdown            | POST   | Stop the REST API server         |
 
 
-6. 4. REST API Example Request:
+7. REST API Example Request:
 ```bash
 curl http://127.0.0.1:5000/api/simulations
 ```
 
-7. Output: All performance reports in `/results/`
+8. Output: All performance reports in `results/`
 
 ---
 
 ## Strategies Simulated
 
-- Constant position sizing  
+- Constant position sizing
 - Martingale / anti-Martingale  
 - Streak-based (pause/increase on win/loss)
 - Pause-combo strategies
@@ -133,7 +157,7 @@ strategies = 20,000 simulations.
 
 Models alternating market conditions:
 
-```json
+```bash
 --use_regime
 --regimes '[{"length":300,"hit_rate":0.9,"avg_win":200,"avg_loss":100},
             {"length":200,"hit_rate":0.5,"avg_win":100,"avg_loss":100},
@@ -183,7 +207,7 @@ Test API manually:
 curl http://127.0.0.1:5000/api/simulations
 ```
 
-Database file not found? Check SQLite3 or Parquet storage in /results/
+Database file not found? Check SQLite3 or Parquet storage in results/
 
 ---
 
@@ -194,7 +218,7 @@ python dps.py
 ```
 
 → Runs 20 strategies × 1000 Monte Carlo simulations = 20,000 runs.
-→ Results saved in `/results/*.*`
+→ Results saved in `results/*.*`
 
 ---
 
