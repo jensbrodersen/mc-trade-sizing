@@ -330,7 +330,7 @@ def main():
         print(clean_text)
 
     print("\n✅ Simulation results successfully displayed in the console.")
-    print(f"\n✅ HTML overview of the runs has been generated: {html_output_path}")
+    print(f"\n✅ HTML overview successfully created: {html_output_path}")
 
     # Generate timestamp for the filename
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -406,7 +406,8 @@ def main():
     # write_to_influxdb(csv_data)
     # Check if InfluxDB usage is enabled
     config = load_config()
-    use_influxdb = influx_config.get("use_influxdb", False)  # Default to False if missing
+    use_influxdb = config.get("use_influxdb", False)
+
 
     if use_influxdb and is_influxdb_reachable(config["influxdb_url"]):
         try:
@@ -420,11 +421,14 @@ def main():
         print("\nℹ️ InfluxDB usage is disabled in configuration.")
 
     #sqlite3 output
-    db_path = "simulation_results.db"  # SQLite-Datenbankpfad
+    db_path = os.path.join(results_dir, f"simulation_results_{timestamp}.db")
     save_sql(unique_csv_data, results_dir, timestamp)
-    print(f"\n✅ SQLite database file successfully created: {os.path.join(results_dir, f'simulation_runs_{timestamp}.parquet')}")
+    print(f"\n✅ SQLite database file successfully created: {db_path}")
+
 
     # Ask user if the REST API should be started
+    timeout_setting = config.get("api_timeout", 60)
+    answer = timed_input("Do you want to continue? [y/N]: ", timeout=timeout_setting)
     run_api = timed_input("\n❓ Should the REST API be started? (y/n): ")
     if run_api == "y":
         # Extract API timeout dynamically
