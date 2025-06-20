@@ -1,6 +1,5 @@
 numpy
 pandas
-argparse
 openpyxl
 pyarrow
 flask
