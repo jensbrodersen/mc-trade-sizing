@@ -1,0 +1,52 @@
+# Re-enter for each system to be tested
+# =====================================
+hit_rate: 0.82
+avg_win: 186
+avg_loss: 219
+
+# Monte Carlo configuration
+# =========================
+num_simulations: 200
+num_trades: 1000
+num_mc_shuffles: 20
+
+# Markov Order 1
+# ===============
+p_win_after_win: 0.8
+p_win_after_loss: 0.4
+
+# Markov Order 2
+# ===============
+p_win_ww: 0.8
+p_win_wl: 0.6
+p_win_lw: 0.5
+p_win_ll: 0.3
+
+# Regime Switching
+# ================
+regimes:
+  - length: 300
+    hit_rate: 0.9
+    avg_win: 200
+    avg_loss: 100
+  - length: 200
+    hit_rate: 0.5
+    avg_win: 100
+    avg_loss: 100
+  - length: 500
+    hit_rate: 0.2
+    avg_win: 100
+    avg_loss: 200
+
+# API timeout setting
+api_timeout: 30
+
+# InfluxDB Configuration
+# ======================
+influxdb_url: "http://localhost:8086"
+influxdb_token: "your_influxdb_token"
+influxdb_org: "your_org_name"
+influxdb_bucket: "your_bucket_name"
+
+# Enable InfluxDB storage (true/false)
+use_influxdb: true

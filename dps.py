@@ -38,6 +38,7 @@
 
 import subprocess
 import json
+import yaml
 import os
 import sys
 import concurrent.futures
@@ -141,8 +142,6 @@ def highlight_top4_section(html):
         )
     return re.sub(pattern, repl, html, flags=re.IGNORECASE)
 
-import re
-
 def extract_simulation_settings(table_text):
     """Extracts simulation parameters from HTML text and returns them as a dictionary."""
     hit_rate_match = re.search(r"Hit rate: ([\d.]+)%", table_text)
@@ -168,21 +167,21 @@ def extract_simulation_settings(table_text):
 def main():
     # Load configuration file
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(script_dir, "input.json")
+    config_path = os.path.join(script_dir, "dps_config.yaml")
     try:
-        with open(config_path, "r", encoding="utf-8") as file:  # Ensure proper encoding
-            args = json.load(file)
+        with open(config_path, "r", encoding="utf-8") as file:
+            args = yaml.safe_load(file)
     except FileNotFoundError:
         print(f"Error: '{config_path}' not found.")
         sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON file: {e}")
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file: {e}")
         sys.exit(1)
 
     # Extract required parameters
     base_hit = args.get("hit_rate")
     if base_hit is None:
-        print("Error: 'hit_rate' missing in JSON file.")
+        print("Error: 'hit_rate' missing in YAML file.")
         sys.exit(1)
 
     hit_rates = [
@@ -193,7 +192,7 @@ def main():
 
     for key in ("avg_win", "avg_loss", "num_simulations", "num_trades", "num_mc_shuffles"):
         if key not in args:
-            print(f"Error: '{key}' missing in JSON file.")
+            print(f"Error: '{key}' missing in YAML file.")
             sys.exit(1)
 
     p_win_after_win = args.get("p_win_after_win", 0.7)
@@ -204,7 +203,7 @@ def main():
     p_win_ll = args.get("p_win_ll", 0.3)
     regimes = args.get("regimes", None)
 
-    # Load InfluxDB configuration from JSON file
+    # Load InfluxDB configuration from YAML file
     influx_config = load_config()
     
     simulation_cmds = []
@@ -433,7 +432,7 @@ def main():
     if run_api == "y":
         # Extract API timeout dynamically
         api_timeout = config.get("api_timeout", 60) # Default to 60 if missing
-        print(f"\n⏳ API timeout loaded from JSON: {api_timeout} seconds")
+        print(f"\n⏳ API timeout loaded from config: {api_timeout} seconds")
         print("\n🚀 Starting the REST API with a timeout of", api_timeout, "seconds...")
         start_api(unique_csv_data, api_timeout)  # Pass the timeout dynamically
     else:
