@@ -1,10 +1,9 @@
-import json
+import yaml
 from influxdb_client import InfluxDBClient, Point
 
 def load_config():
-    """Load InfluxDB configuration from JSON file."""
-    with open("input.json", "r", encoding="utf-8") as file:  # Nutze dein bestehendes JSON-File
-        return json.load(file)
+    with open("dps_config.yaml", "r", encoding="utf-8") as file:
+        return yaml.safe_load(file)
 
 import socket
 from urllib.parse import urlparse

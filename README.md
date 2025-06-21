@@ -53,12 +53,12 @@ sequence dependencies, going beyond static position sizing methods.
 
 ## Quick Start
 
-1. Adjust parameters in `input.json`:
+1. Adjust parameters in `dps_config.yaml`:
 
-```json
-"hit_rate": 0.82,
-"avg_win": 186,
-"avg_loss": 219
+```yaml
+hit_rate: 0.82
+avg_win: 186
+avg_loss: 219
 ```
 
 2. Run the simulator locally (Python script):
