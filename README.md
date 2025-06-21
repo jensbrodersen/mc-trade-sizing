@@ -1,3 +1,5 @@
+> **Tested with Python 3.10+ | Docker 24+ | Kubernetes 1.28+**
+
 # mc-trade-sizing
 
 Monte Carlo simulations for dynamic position sizing based on trade sequences
@@ -22,6 +24,31 @@ different market scenarios.
 
 ---
 
+## Project Structure
+
+```
+.
+├── Dockerfile               # Image definition for mc-trade-sizing
+├── dps.py                   # Main script for trade simulation
+├── dps_config.yaml          # Configuration file (YAML format)
+├── requirements.txt         # Python dependencies
+├── k8s/                     # Kubernetes job and deployment manifests
+│   └── dps-job.yaml
+├── docs/                    # Usage documentation (Docker & Kubernetes)
+│   ├── readme_docker_usage.md
+│   └── readme_kubernetes_usage.md
+├── src/                     # Supporting modules and API backend
+│   ├── api_handler.py
+│   ├── influx_handler.py
+│   ├── output_handler.py
+│   └── trading_models.py
+├── results/                 # Output folder (mounted by Docker)
+├── LICENSE
+└── README.md
+```
+
+---
+
 ## Installation
 
 **Install dependencies:**
@@ -41,6 +68,33 @@ docker run -it -v "$PWD/results":/app/results jensbrodersen/mc-trade-sizing
 
 > **Note:**
 > See Quick Start step 3 for usage details.
+
+---
+
+## Kubernetes
+
+To run the simulation as a Kubernetes Job:
+
+```bash
+kubectl apply -f k8s/dps-job.yaml
+kubectl logs -l job-name=mc-trade-simulation
+```
+
+To reset the job:
+
+```bash
+kubectl delete job mc-trade-simulation
+kubectl apply -f k8s/dps-job.yaml
+```
+
+To download result files from the container:
+
+```bash
+kubectl get pods
+kubectl cp <pod-name>:/app/results ./results
+```
+
+> For full usage instructions under WSL2 + MicroK8s, see docs/readme_kubernetes_usage.md
 
 ---
 
@@ -91,11 +145,11 @@ curl http://127.0.0.1:5000/api/simulations
 
 6. REST API Usage:
 
-| Endpoint               | Method | Description                        |
-|------------------------|--------|------------------------------------|
-| /api/simulations/     | GET    | Retrieve all simulation results  |
-| /api/simulations/<id> | GET    | Get details on specific runs     |
-| /shutdown            | POST   | Stop the REST API server         |
+| Endpoint                | Method | Description                    |
+|-------------------------|--------|--------------------------------|
+| `/api/simulations/`     | GET    | Retrieve all simulation results |
+| `/api/simulations/<id>` | GET    | Get details on specific runs    |
+| `/shutdown`             | POST   | Stop the REST API server        |
 
 
 7. REST API Example Request:
