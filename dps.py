@@ -420,7 +420,7 @@ def main():
         print("\nℹ️ InfluxDB usage is disabled in configuration.")
 
     #sqlite3 output
-    db_path = os.path.join(results_dir, f"simulation_results_{timestamp}.db")
+    db_path = os.path.join(results_dir, f"simulation_runs_{timestamp}.db")
     save_sql(unique_csv_data, results_dir, timestamp)
     print(f"\n✅ SQLite database file successfully created: {db_path}")
 
