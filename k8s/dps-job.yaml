@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mc-trade-simulation
+spec:
+  template:
+    spec:
+      containers:
+      - name: dps-simulator
+        image: jensbrodersen/mc-trade-sizing:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python", "dps.py"]
+        volumeMounts:
+        - name: results
+          mountPath: /app/results
+      volumes:
+      - name: results
+        emptyDir: {}
+      restartPolicy: Never
+  backoffLimit: 1
